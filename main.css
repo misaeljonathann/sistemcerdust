@@ -1,0 +1,56 @@
+body, html {
+    margin: 0;
+    max-width: 100vw;
+    height: 100vh;
+}
+
+.container {
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;  
+    height: 100%; 
+}
+
+.board-domain {
+    padding: 1rem;
+    width: 50%;
+    height: 80%;
+}
+
+.board {
+    width: 100%;
+    height: 100%;;
+    border: 1px solid #000000;
+    border-spacing: 0;
+}
+
+.board .row {
+    width: 100%;
+    border: 1px solid black;
+}
+.board .column {
+    background: #2a7f0d;
+    border: 1px solid black;
+    height: 16%;
+    width: 16%; 
+}
+
+.crown-white {
+    background: url(crownwhite.png) no-repeat;
+
+}
+
+.crown-black {
+    background: url(crown.png) no-repeat;
+}
+
+.cell {
+    margin: 0;
+    background-position: center;
+    background-size: 80% 80%;
+    width: 100%;
+    height: 100%;
+}    
+
