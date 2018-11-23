@@ -20,7 +20,7 @@ const pawnClass: {[id: number]: pawnType} = {
     3: new pawnType(false, false),
     4: new pawnType(true, false)
 };
-
+var counter: number = 1;
 class Board {
     parent: Board;
     child: Board[] = [];
@@ -45,18 +45,23 @@ class Board {
                 var totalTurnedPin = this.totalTurnedPin(i,j);
                 //console.log(Object.keys(totalTurnedPin));
                 if (this.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
+                    counter++;
+                    console.log(counter);
                     var newArray = this.generateTurnedArray(totalTurnedPin);
-                    newArray[i][j] = this.turn%4;
-                    var newNode = new Board(this, newArray, pawnClass[1], (this.turn+1)%4);
+                    newArray[i][j] = (this.turn == 4) ? 4 : this.turn%4 ;
+                    var newNode = new Board(this, newArray, pawnClass[(this.turn%4)+1], (this.turn%4)+1);
                     this.addChild(newNode);              
                 }
             }
         }
+        if (counter >= 5000) {
+            return 0;
+        }
+        console.log(this.array);
         this.child.forEach(path => {
             path.generateChild();
         });
         console.log("selesai");
-
     }
 
     generateTurnedArray(paths: {[pawn: number]: number[][]}): number[][] {
@@ -165,19 +170,19 @@ class Board {
         for (var x = i+1; x < 6; x++) {
             let breakCheck = false;
             for ( var y = j-1; y > 0; y--) {
-                if (this.array[i][y] == 0) {
+                if (this.array[i][j] == 0) {
                     breakCheck = true;
                     break;   
                 }
-                else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
-                    turnedPin.push([i,y]);
+                else if ( (this.pawn.isEven && this.array[x][y] % 2 == 1) || (!this.pawn.isEven && this.array[x][y] % 2 == 0) ) {
+                    turnedPin.push([x,y]);
                 } else {
                     turnedPin.forEach(coor => {
                         //whichPin[this.array[x][j]].push(coor);
-                        if (!(this.array[i][y] in whichPin) && (whichPin[this.array[i][y]] = [])) { //if not exists
-                            whichPin[this.array[i][y]] = [coor];
+                        if (!(this.array[x][y] in whichPin) && (whichPin[this.array[x][y]] = [])) { //if not exists
+                            whichPin[this.array[x][y]] = [coor];
                         } else {
-                            whichPin[this.array[i][y]].push(coor);
+                            whichPin[this.array[x][y]].push(coor);
                         }
                     })
                     breakCheck = true;
@@ -192,19 +197,19 @@ class Board {
         for (var x = i+1; x < 6; x++) {
             let breakCheck = false;
             for ( var y = j+1; y < 6; y++) {
-                if (this.array[i][y] == 0) {
+                if (this.array[i][j] == 0) {
                     breakCheck = true;
                     break;   
                 }
-                else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
-                    turnedPin.push([i,y]);
+                else if ( (this.pawn.isEven && this.array[x][y] % 2 == 1) || (!this.pawn.isEven && this.array[x][y] % 2 == 0) ) {
+                    turnedPin.push([x,y]);
                 } else {
                     turnedPin.forEach(coor => {
                         //whichPin[this.array[x][j]].push(coor);
-                        if (!(this.array[i][y] in whichPin) && (whichPin[this.array[i][y]] = [])) { //if not exists
-                            whichPin[this.array[i][y]] = [coor];
+                        if (!(this.array[x][y] in whichPin) && (whichPin[this.array[x][y]] = [])) { //if not exists
+                            whichPin[this.array[x][y]] = [coor];
                         } else {
-                            whichPin[this.array[i][y]].push(coor);
+                            whichPin[this.array[x][y]].push(coor);
                         }
                     })
                     breakCheck = true;
@@ -219,19 +224,19 @@ class Board {
         for (var x = i-1; x > 0; x--) {
             let breakCheck = false;
             for ( var y = j-1; y > 0; y--) {
-                if (this.array[i][y] == 0) {
+                if (this.array[i][j] == 0) {
                     breakCheck = true;
                     break;   
                 }
-                else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
-                    turnedPin.push([i,y]);
+                else if ( (this.pawn.isEven && this.array[x][y] % 2 == 1) || (!this.pawn.isEven && this.array[x][y] % 2 == 0) ) {
+                    turnedPin.push([x,y]);
                 } else {
                     turnedPin.forEach(coor => {
                         //whichPin[this.array[x][j]].push(coor);
-                        if (!(this.array[i][y] in whichPin) && (whichPin[this.array[i][y]] = [])) { //if not exists
-                            whichPin[this.array[i][y]] = [coor];
+                        if (!(this.array[x][y] in whichPin) && (whichPin[this.array[x][y]] = [])) { //if not exists
+                            whichPin[this.array[x][y]] = [coor];
                         } else {
-                            whichPin[this.array[i][y]].push(coor);
+                            whichPin[this.array[x][y]].push(coor);
                         }
                     })
                     breakCheck = true;
@@ -246,18 +251,19 @@ class Board {
         for (var x = i-1; x > 0; x--) {
             let breakCheck = false;
             for ( var y = j+1; y < 6; y++) {
-                if (this.array[i][y] == 0) {
+                if (this.array[i][j] == 0) {
                     breakCheck = true;
                     break;   
                 }
-                else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
-                    turnedPin.push([i,y]);                } else {
+                else if ( (this.pawn.isEven && this.array[x][y] % 2 == 1) || (!this.pawn.isEven && this.array[x][y] % 2 == 0) ) {
+                    turnedPin.push([x,y]);                
+                } else {
                     turnedPin.forEach(coor => {
                         //whichPin[this.array[x][j]].push(coor);
-                        if (!(this.array[i][y] in whichPin) && (whichPin[this.array[i][y]] = [])) { //if not exists
-                            whichPin[this.array[i][y]] = [coor];
+                        if (!(this.array[x][y] in whichPin) && (whichPin[this.array[x][y]] = [])) { //if not exists
+                            whichPin[this.array[x][y]] = [coor];
                         } else {
-                            whichPin[this.array[i][y]].push(coor);
+                            whichPin[this.array[x][y]].push(coor);
                         }
                     })
                     breakCheck = true;
@@ -280,8 +286,8 @@ class OthelloV2 {
         const array = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
-            [0, 0, 3, 4, 0, 0],
-            [0, 0, 4, 3, 0, 0],
+            [0, 0, 1, 2, 0, 0],
+            [0, 0, 2, 1, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ];
