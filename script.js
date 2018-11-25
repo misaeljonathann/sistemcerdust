@@ -39,7 +39,7 @@ var Board = /** @class */ (function () {
                 }
             }
         }
-        if (counter >= 5000) {
+        if (counter >= 30) {
             return 0;
         }
         console.log(this.array);
@@ -82,9 +82,15 @@ var Board = /** @class */ (function () {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
                     if (!(_this.array[x][j] in whichPin) && (whichPin[_this.array[x][j]] = [])) { //if not exists
-                        whichPin[_this.array[x][j]] = [coor];
+                        if (_this.turn > _this.array[x][j] || _this.turn < _this.array[x][j]) {
+                            whichPin[_this.turn] = [coor];
+                        }
+                        else {
+                            whichPin[_this.array[x][j]] = [coor];
+                        }
                     }
                     else {
+                        console.log("turn : ", _this.turn);
                         whichPin[_this.array[x][j]].push(coor);
                     }
                 });
@@ -103,7 +109,12 @@ var Board = /** @class */ (function () {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
                     if (!(_this.array[x][j] in whichPin) && (whichPin[_this.array[x][j]] = [])) { //if not exists
-                        whichPin[_this.array[x][j]] = [coor];
+                        if (_this.turn > _this.array[x][j] || _this.turn < _this.array[x][j]) {
+                            whichPin[_this.turn] = [coor];
+                        }
+                        else {
+                            whichPin[_this.array[x][j]] = [coor];
+                        }
                     }
                     else {
                         whichPin[_this.array[x][j]].push(coor);
@@ -124,7 +135,12 @@ var Board = /** @class */ (function () {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
                     if (!(_this.array[i][y] in whichPin) && (whichPin[_this.array[i][y]] = [])) { //if not exists
-                        whichPin[_this.array[i][y]] = [coor];
+                        if (_this.turn > _this.array[i][y] || _this.turn < _this.array[i][y]) {
+                            whichPin[_this.turn] = [coor];
+                        }
+                        else {
+                            whichPin[_this.array[i][y]] = [coor];
+                        }
                     }
                     else {
                         whichPin[_this.array[i][y]].push(coor);
@@ -145,7 +161,12 @@ var Board = /** @class */ (function () {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
                     if (!(_this.array[i][y] in whichPin) && (whichPin[_this.array[i][y]] = [])) { //if not exists
-                        whichPin[_this.array[i][y]] = [coor];
+                        if (_this.turn > _this.array[i][y] || _this.turn < _this.array[i][y]) {
+                            whichPin[_this.turn] = [coor];
+                        }
+                        else {
+                            whichPin[_this.array[i][y]] = [coor];
+                        }
                     }
                     else {
                         whichPin[_this.array[i][y]].push(coor);
@@ -158,7 +179,7 @@ var Board = /** @class */ (function () {
         for (var x = i + 1; x < 6; x++) {
             var breakCheck = false;
             for (var y = j - 1; y > 0; y--) {
-                if (this.array[i][j] == 0) {
+                if (this.array[x][y] == 0) {
                     breakCheck = true;
                     break;
                 }
@@ -169,7 +190,12 @@ var Board = /** @class */ (function () {
                     turnedPin.forEach(function (coor) {
                         //whichPin[this.array[x][j]].push(coor);
                         if (!(_this.array[x][y] in whichPin) && (whichPin[_this.array[x][y]] = [])) { //if not exists
-                            whichPin[_this.array[x][y]] = [coor];
+                            if (_this.turn > _this.array[x][y] || _this.turn < _this.array[x][y]) {
+                                whichPin[_this.turn] = [coor];
+                            }
+                            else {
+                                whichPin[_this.array[x][y]] = [coor];
+                            }
                         }
                         else {
                             whichPin[_this.array[x][y]].push(coor);
@@ -184,21 +210,29 @@ var Board = /** @class */ (function () {
                 break;
         }
         //check bot right 
+        //console.log ("Check Bottom Right dari koor: x:", i, "- y:", j, " dengan nilai : ", this.array[i][j]);
         for (var x = i + 1; x < 6; x++) {
             var breakCheck = false;
             for (var y = j + 1; y < 6; y++) {
                 if (this.array[i][j] == 0) {
+                    console.log("koor ", i, "-", j, " bernilai 0");
                     breakCheck = true;
                     break;
                 }
                 else if ((this.pawn.isEven && this.array[x][y] % 2 == 1) || (!this.pawn.isEven && this.array[x][y] % 2 == 0)) {
+                    console.log("PUSH : ", i, "-", j);
                     turnedPin.push([x, y]);
                 }
                 else {
                     turnedPin.forEach(function (coor) {
-                        //whichPin[this.array[x][j]].push(coor);
+                        console.log("lets push koor : ", coor);
                         if (!(_this.array[x][y] in whichPin) && (whichPin[_this.array[x][y]] = [])) { //if not exists
-                            whichPin[_this.array[x][y]] = [coor];
+                            if (_this.turn > _this.array[x][y] || _this.turn < _this.array[x][y]) {
+                                whichPin[_this.turn] = [coor];
+                            }
+                            else {
+                                whichPin[_this.array[x][y]] = [coor];
+                            }
                         }
                         else {
                             whichPin[_this.array[x][y]].push(coor);
@@ -227,7 +261,12 @@ var Board = /** @class */ (function () {
                     turnedPin.forEach(function (coor) {
                         //whichPin[this.array[x][j]].push(coor);
                         if (!(_this.array[x][y] in whichPin) && (whichPin[_this.array[x][y]] = [])) { //if not exists
-                            whichPin[_this.array[x][y]] = [coor];
+                            if (_this.turn > _this.array[x][y] || _this.turn < _this.array[x][y]) {
+                                whichPin[_this.turn] = [coor];
+                            }
+                            else {
+                                whichPin[_this.array[x][y]] = [coor];
+                            }
                         }
                         else {
                             whichPin[_this.array[x][y]].push(coor);
@@ -245,7 +284,7 @@ var Board = /** @class */ (function () {
         for (var x = i - 1; x > 0; x--) {
             var breakCheck = false;
             for (var y = j + 1; y < 6; y++) {
-                if (this.array[i][j] == 0) {
+                if (this.array[x][y] == 0) {
                     breakCheck = true;
                     break;
                 }
@@ -256,7 +295,12 @@ var Board = /** @class */ (function () {
                     turnedPin.forEach(function (coor) {
                         //whichPin[this.array[x][j]].push(coor);
                         if (!(_this.array[x][y] in whichPin) && (whichPin[_this.array[x][y]] = [])) { //if not exists
-                            whichPin[_this.array[x][y]] = [coor];
+                            if (_this.turn > _this.array[x][y] || _this.turn < _this.array[x][y]) {
+                                whichPin[_this.turn] = [coor];
+                            }
+                            else {
+                                whichPin[_this.array[x][y]] = [coor];
+                            }
                         }
                         else {
                             whichPin[_this.array[x][y]].push(coor);
@@ -280,8 +324,8 @@ var OthelloV2 = /** @class */ (function () {
         var array = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 2, 0, 0],
             [0, 0, 2, 1, 0, 0],
+            [0, 0, 1, 2, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ];
