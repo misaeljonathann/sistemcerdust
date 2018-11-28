@@ -20,6 +20,17 @@ const pawnClass: {[id: number]: pawnType} = {
     3: new pawnType(false, false),
     4: new pawnType(true, false)
 };
+
+class UtilityCoor {
+    point: number;
+    coor: [number, number];
+
+    constructor(point: number, coor: [number, number]) {
+        this.point = point;
+        this.coor = coor;
+    }
+}
+
 var counter: number = 1;
 class Board {
     parent: Board;
@@ -28,19 +39,20 @@ class Board {
     pawn: pawnType;
     turn: number;
     utilityPoint: number;
-    candidatePoint: number[];
+    candidatePoint: UtilityCoor;
     isMax: boolean;
     depth: number;
+    move: [number, number];
 
-    constructor(parent: Board, array: number[][], pawn: pawnType, turn: number, bool: boolean, depth: number) {
+    constructor(parent: Board, array: number[][], pawn: pawnType, turn: number, bool: boolean, depth: number, move: [number, number]) {
         this.parent = parent;
         this.array = array;
         this.pawn = pawn;
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array);
-        this.candidatePoint = [];
         this.isMax = bool;
         this.depth = depth;
+        this.move = move;
     }
 
     utilityFunction(array: number[][]) {
@@ -64,11 +76,10 @@ class Board {
         this.child.push(newChild);
     }
 
-
     generateChild() {
 
         if (this.depth == 4) {
-            return this.utilityPoint;
+            return new UtilityCoor(this.utilityPoint, this.move);
         }
 
         for (var i = 0; i < 6; i++) {
@@ -80,24 +91,38 @@ class Board {
                     var newArray = this.generateTurnedArray(totalTurnedPin);
                     newArray[i][j] = (this.turn == 4) ? 4 : this.turn%4 ;
                     
-                    var newNode = new Board(this, newArray, pawnClass[(this.turn%4)+1], (this.turn%4)+1, !this.isMax, this.depth+1);
+                    var newNode = new Board(this, newArray, pawnClass[(this.turn%4)+1], (this.turn%4)+1, !this.isMax, this.depth+1, [i,j]) ;
                     this.addChild(newNode);
-                    //Minimax
-                    
-                    this.candidatePoint.push(newNode.generateChild());
                 }
             }
-        }      
+        }
         console.log(this.array);
         console.log(this.depth);
         
         if (this.isMax) {
-            return Math.max.apply(Math, this.candidatePoint);
+            let valMax = 0;
+            let coor;
+            this.child.forEach(child => {
+                let nextMove = child.generateChild();
+                if (nextMove.point > valMax) {
+                    valMax = nextMove.point;
+                    coor = nextMove.coor;
+                }
+            })
+            return new UtilityCoor(valMax, coor);
         } 
 
         else {
-            // this.candidatePoint.push(newNode.generateChild());
-            return Math.min.apply(Math, this.candidatePoint);
+            let valMin = 10000000;
+            let coor;
+            this.child.forEach(child => {
+                let nextMove = child.generateChild();
+                if (nextMove.point < valMin) {
+                    valMin = nextMove.point;
+                    coor = nextMove.coor;
+                }
+            })
+            return new UtilityCoor(valMin, coor);
         }
         // if (counter >= 15) {
         //     return 0;
@@ -134,6 +159,7 @@ class Board {
         // check right 
         for (var x = i+1; x < 6; x++) {
             if (this.array[x][j] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ( (this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0) ) {
@@ -159,6 +185,7 @@ class Board {
         // check left
         for (var x = i-1; x > 0; x--) {
             if (this.array[x][j] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ( (this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0) ) {
@@ -183,6 +210,7 @@ class Board {
         // check top 
         for (var y = j-1; y > 0; y--) {
             if (this.array[i][y] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
@@ -207,6 +235,7 @@ class Board {
         // check bottom
         for (var y = j+1; y < 6; y++) {
             if (this.array[i][y] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
@@ -341,7 +370,7 @@ class OthelloV2 {
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ];
-        this.initialConfiguration = new Board(null, array, new pawnType(false, true), 1, true, 1);
+        this.initialConfiguration = new Board(null, array, new pawnType(false, true), 1, true, 1, [null, null]);
         this.constructTree();
     }
 

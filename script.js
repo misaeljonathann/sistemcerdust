@@ -12,18 +12,25 @@ var pawnClass = {
     3: new pawnType(false, false),
     4: new pawnType(true, false)
 };
+var UtilityCoor = /** @class */ (function () {
+    function UtilityCoor(point, coor) {
+        this.point = point;
+        this.coor = coor;
+    }
+    return UtilityCoor;
+}());
 var counter = 1;
 var Board = /** @class */ (function () {
-    function Board(parent, array, pawn, turn, bool, depth) {
+    function Board(parent, array, pawn, turn, bool, depth, move) {
         this.child = [];
         this.parent = parent;
         this.array = array;
         this.pawn = pawn;
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array);
-        this.candidatePoint = [];
         this.isMax = bool;
         this.depth = depth;
+        this.move = move;
     }
     Board.prototype.utilityFunction = function (array) {
         var pointAlloc = {
@@ -46,7 +53,7 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.generateChild = function () {
         if (this.depth == 4) {
-            return this.utilityPoint;
+            return new UtilityCoor(this.utilityPoint, this.move);
         }
         for (var i = 0; i < 6; i++) {
             for (var j = 0; j < 6; j++) {
@@ -55,21 +62,36 @@ var Board = /** @class */ (function () {
                     counter++;
                     var newArray = this.generateTurnedArray(totalTurnedPin);
                     newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
-                    var newNode = new Board(this, newArray, pawnClass[(this.turn % 4) + 1], (this.turn % 4) + 1, !this.isMax, this.depth + 1);
+                    var newNode = new Board(this, newArray, pawnClass[(this.turn % 4) + 1], (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
                     this.addChild(newNode);
-                    //Minimax
-                    this.candidatePoint.push(newNode.generateChild());
                 }
             }
         }
         console.log(this.array);
         console.log(this.depth);
         if (this.isMax) {
-            return Math.max.apply(Math, this.candidatePoint);
+            var valMax_1 = 0;
+            var coor_1;
+            this.child.forEach(function (child) {
+                var nextMove = child.generateChild();
+                if (nextMove.point > valMax_1) {
+                    valMax_1 = nextMove.point;
+                    coor_1 = nextMove.coor;
+                }
+            });
+            return new UtilityCoor(valMax_1, coor_1);
         }
         else {
-            // this.candidatePoint.push(newNode.generateChild());
-            return Math.min.apply(Math, this.candidatePoint);
+            var valMin_1 = 10000000;
+            var coor_2;
+            this.child.forEach(function (child) {
+                var nextMove = child.generateChild();
+                if (nextMove.point < valMin_1) {
+                    valMin_1 = nextMove.point;
+                    coor_2 = nextMove.coor;
+                }
+            });
+            return new UtilityCoor(valMin_1, coor_2);
         }
         // if (counter >= 15) {
         //     return 0;
@@ -105,6 +127,7 @@ var Board = /** @class */ (function () {
         // check right 
         for (var x = i + 1; x < 6; x++) {
             if (this.array[x][j] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0)) {
@@ -132,6 +155,7 @@ var Board = /** @class */ (function () {
         // check left
         for (var x = i - 1; x > 0; x--) {
             if (this.array[x][j] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0)) {
@@ -158,6 +182,7 @@ var Board = /** @class */ (function () {
         // check top 
         for (var y = j - 1; y > 0; y--) {
             if (this.array[i][y] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
@@ -184,6 +209,7 @@ var Board = /** @class */ (function () {
         // check bottom
         for (var y = j + 1; y < 6; y++) {
             if (this.array[i][y] == 0) {
+                turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
@@ -346,7 +372,7 @@ var OthelloV2 = /** @class */ (function () {
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ];
-        this.initialConfiguration = new Board(null, array, new pawnType(false, true), 1, true, 1);
+        this.initialConfiguration = new Board(null, array, new pawnType(false, true), 1, true, 1, [null, null]);
         this.constructTree();
     }
     OthelloV2.prototype.constructTree = function () {
