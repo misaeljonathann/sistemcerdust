@@ -2,10 +2,10 @@ body, html {
     margin: 0;
     max-width: 100vw;
     height: 100vh;
+    background:	#00ff7f;
 }
 
 .container {
-    padding: 1rem;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -21,35 +21,41 @@ body, html {
 
 .board {
     width: 100%;
-    height: 100%;;
-    border: 1px solid #000000;
+    height: 100%;
     border-spacing: 0;
 }
 
 .board .row {
     width: 100%;
-    border: 1px solid black;
 }
 .board .column {
-    background: #2a7f0d;
-    border: 1px solid black;
+    background:#00c000;
+    border: 1px solid #008000;
     height: 16%;
     width: 16%; 
 }
 
-.crown-white {
-    background: url(crownwhite.png) no-repeat;
+.crown-red {
+    background: url(crown-red.png) no-repeat;
 
 }
 
-.crown-black {
-    background: url(crown.png) no-repeat;
+.crown-blue {
+    background: url(crown-blue.png) no-repeat;
+}
+
+.helmet-red {
+    background: url(helmet-red.png) no-repeat;
+}
+
+.helmet-blue {
+    background: url(helmet-blue.png) no-repeat;
 }
 
 .cell {
     margin: 0;
     background-position: center;
-    background-size: 80% 80%;
+    background-size: 80% 90%;
     width: 100%;
     height: 100%;
 }    
