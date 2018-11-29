@@ -369,65 +369,57 @@ var Board = /** @class */ (function () {
     };
     return Board;
 }());
-var HUMAN = 1;
-var BOT = 2;
+var HUMAN = 0;
+var BOT = 1;
 var OthelloV2 = /** @class */ (function () {
     function OthelloV2() {
-        this.array = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 2, 0, 0],
-            [0, 0, 2, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-        ];
-        this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
-        this.turn = 1;
-        this.play(1, 3, 1);
-        console.log("selesai");
-        this.play(2, null, null);
     }
-    OthelloV2.prototype.play = function (whoseTurn, i, j) {
-        if (whoseTurn == HUMAN) {
-            this.array[i][j] = this.turn;
-            var totalTurnedPin = this.initialConfiguration.totalTurnedPin(i, j);
-            if (this.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
-                counter++;
-                var newArray = this.initialConfiguration.generateTurnedArray(totalTurnedPin);
-                newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
-                var newNode = new Board(this.initialConfiguration, newArray, pawnClass[(this.initialConfiguration.turn % 4) + 1], (this.initialConfiguration.turn % 4) + 1, !this.initialConfiguration.isMax, this.initialConfiguration.depth + 1, [i, j]);
-            }
-        }
-        if (whoseTurn == BOT) {
-            this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
-        }
+    OthelloV2.prototype.play = function (boardArr, turn) {
+        this.initialConfiguration = this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
+        console.log(this.initialConfiguration.candidatePoint.coor);
+        return UC.coor;
     };
     OthelloV2.prototype.constructTree = function () {
     };
     return OthelloV2;
 }());
-var game = new OthelloV2();
-var turnCounter = 0;
-console.log(turnCounter);
-function clickedPiece(event) {
-    var mod_4 = turnCounter % 4;
-    var element = document.getElementById(event);
-    console.log(mod_4, turnCounter);
-    switch (mod_4) {
-        case 0:
-            element.classList.add("crown-red");
-            break;
-        case 1:
-            element.classList.add("crown-blue");
-            break;
-        case 2:
-            element.classList.add("helmet-red");
-            break;
-        case 3:
-            element.classList.add("helmet-blue");
-            break;
-        default:
-            break;
+var Main = /** @class */ (function () {
+    function Main() {
+        this.game = new OthelloV2();
+        this.turnCounter = 0;
+        this.whoseTurn = this.turnCounter % 2;
+        console.log('misael', this.turnCounter);
     }
-    turnCounter++;
-}
+    Main.prototype.handleClick = function (event) {
+        var _a = event.split('-'), x = _a[0], y = _a[1];
+        var _b = this.game.play(), nextX = _b[0], nextY = _b[1];
+        this.placePawn(nextX, nextY);
+    };
+    Main.prototype.placePawn = function (x, y) {
+        var cssClass = x + '-' + y;
+        var mod_4 = this.turnCounter % 4;
+        var element = document.getElementById(cssClass);
+        console.log(mod_4, this.turnCounter);
+        switch (mod_4) {
+            case 0:
+                element.classList.add("crown-red");
+                break;
+            case 1:
+                element.classList.add("crown-blue");
+                break;
+            case 2:
+                element.classList.add("helmet-red");
+                break;
+            case 3:
+                element.classList.add("helmet-blue");
+                break;
+            default:
+                break;
+        }
+        this.turnCounter++;
+        if (this.whoseTurn == 1) {
+            this.game.play();
+        }
+    };
+    return Main;
+}());

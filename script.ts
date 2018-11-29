@@ -14,7 +14,7 @@ class pawnType {
     }
 };
 
-const pawnClass: {[id: number]: pawnType} = {
+const pawnClass: { [id: number]: pawnType } = {
     1: new pawnType(false, true),
     2: new pawnType(true, true),
     3: new pawnType(false, false),
@@ -56,7 +56,7 @@ class Board {
     }
 
     utilityFunction(array: number[][]) {
-        const pointAlloc: { [pawn: number]: number} = {
+        const pointAlloc: { [pawn: number]: number } = {
             0: 0,
             1: -3,
             2: 3,
@@ -71,7 +71,7 @@ class Board {
         }
         return totalPoint;
     }
-    
+
     addChild(newChild: Board) {
         this.child.push(newChild);
     }
@@ -83,37 +83,37 @@ class Board {
         }
 
         for (var i = 0; i < 6; i++) {
-            for (var j = 0; j < 6; j++ ) {
-                var totalTurnedPin = this.totalTurnedPin(i,j);
+            for (var j = 0; j < 6; j++) {
+                var totalTurnedPin = this.totalTurnedPin(i, j);
                 if (this.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
-                    
-                    counter++;                    
+
+                    counter++;
                     var newArray = this.generateTurnedArray(totalTurnedPin);
-                    newArray[i][j] = (this.turn == 4) ? 4 : this.turn%4 ;
-                    
-                    var newNode = new Board(this, newArray, pawnClass[(this.turn%4)+1], (this.turn%4)+1, !this.isMax, this.depth+1, [i,j]) ;
+                    newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
+
+                    var newNode = new Board(this, newArray, pawnClass[(this.turn % 4) + 1], (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
                     this.addChild(newNode);
                 }
             }
         }
         console.log(this.array);
         console.log(this.depth);
-        
+
         if (this.isMax) {
             let valMax = Number.MIN_VALUE;
             let coor;
-            for (let child of this.child){
+            for (let child of this.child) {
                 let nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
                     coor = nextMove.coor;
-                    
+
                     if (valMax >= beta) return new UtilityCoor(valMax, null);
                     alpha = Math.max(alpha, valMax);
                 }
             }
             return new UtilityCoor(valMax, coor);
-        } 
+        }
 
         else {
             let valMin = Number.MAX_VALUE;
@@ -123,7 +123,7 @@ class Board {
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
                     coor = nextMove.coor;
-                    
+
                     if (valMin <= beta) return new UtilityCoor(valMin, null);
                     beta = Math.min(beta, valMin);
                 }
@@ -140,13 +140,13 @@ class Board {
         // });
     }
 
-    generateTurnedArray(paths: {[pawn: number]: number[][]}): number[][] {
-        var newArray = this.array.map(arr => {  
+    generateTurnedArray(paths: { [pawn: number]: number[][] }): number[][] {
+        var newArray = this.array.map(arr => {
             return arr.slice();
         })
         //key : 1, 2, 3, 4
         //value : [[x,y], [i,j]]
-        
+
         for (let key in paths) {
             let value = paths[key];
             value.forEach(path => {
@@ -158,17 +158,17 @@ class Board {
     }
 
     // this function return array of location turned pin [[x,y],....]
-    totalTurnedPin(i: number, j: number): {[pawn: number]: number[][]} {
+    totalTurnedPin(i: number, j: number): { [pawn: number]: number[][] } {
         var turnedPin: number[][] = [];
-        var whichPin: { [pawn: number]: number[][];} = {};
-        
+        var whichPin: { [pawn: number]: number[][]; } = {};
+
         // check right 
-        for (var x = i+1; x < 6; x++) {
+        for (var x = i + 1; x < 6; x++) {
             if (this.array[x][j] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0) ) {
+            else if ((this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0)) {
                 turnedPin.push([x, j]);
             } else {
                 turnedPin.forEach(coor => {
@@ -189,13 +189,13 @@ class Board {
         }
 
         // check left
-        for (var x = i-1; x > 0; x--) {
+        for (var x = i - 1; x > 0; x--) {
             if (this.array[x][j] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0) ) {
-                turnedPin.push([x,j]);
+            else if ((this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0)) {
+                turnedPin.push([x, j]);
             } else {
                 turnedPin.forEach(coor => {
                     //whichPin[this.array[x][j]].push(coor);
@@ -214,13 +214,13 @@ class Board {
         }
 
         // check top 
-        for (var y = j-1; y > 0; y--) {
+        for (var y = j - 1; y > 0; y--) {
             if (this.array[i][y] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
-                turnedPin.push([i,y]);
+            else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
+                turnedPin.push([i, y]);
             } else {
                 turnedPin.forEach(coor => {
                     //whichPin[this.array[x][j]].push(coor);
@@ -239,13 +239,13 @@ class Board {
         }
 
         // check bottom
-        for (var y = j+1; y < 6; y++) {
+        for (var y = j + 1; y < 6; y++) {
             if (this.array[i][y] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0) ) {
-                turnedPin.push([i,y]);
+            else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
+                turnedPin.push([i, y]);
             } else {
                 turnedPin.forEach(coor => {
                     //whichPin[this.array[x][j]].push(coor);
@@ -264,47 +264,47 @@ class Board {
         }
 
         //check bot right
-        for (let a = 1; a <= 5-i; a++) {
-            if (i+a > 5 || j+a > 5) {
+        for (let a = 1; a <= 5 - i; a++) {
+            if (i + a > 5 || j + a > 5) {
                 break;
             }
-            if (this.array[i+a][j+a] == 0) {
+            if (this.array[i + a][j + a] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[i+a][j+a] % 2 == 1) || (!this.pawn.isEven && this.array[i+a][j+a] % 2 == 0) ) {
-                turnedPin.push([i+a,j+a]);
+            else if ((this.pawn.isEven && this.array[i + a][j + a] % 2 == 1) || (!this.pawn.isEven && this.array[i + a][j + a] % 2 == 0)) {
+                turnedPin.push([i + a, j + a]);
             } else {
                 turnedPin.forEach(coor => {
-                    if (!(this.array[i+a][j+a] in whichPin) && (whichPin[this.array[i+a][j+a]] = [])) { //if not exists
-                        let jenisBidak = (this.turn > this.array[i+a][j+a]) ? this.turn : this.array[i+a][j+a];
+                    if (!(this.array[i + a][j + a] in whichPin) && (whichPin[this.array[i + a][j + a]] = [])) { //if not exists
+                        let jenisBidak = (this.turn > this.array[i + a][j + a]) ? this.turn : this.array[i + a][j + a];
                         whichPin[jenisBidak] = [coor];
                     } else {
-                        whichPin[this.array[i+a][j+a]].push(coor);
+                        whichPin[this.array[i + a][j + a]].push(coor);
                     }
                 })
                 break;
             }
         }
-        
+
         //check top right
-        for (let a = 1; a <= 5-i; a++) {
-            if (i+a > 5 || j-a < 0) {
+        for (let a = 1; a <= 5 - i; a++) {
+            if (i + a > 5 || j - a < 0) {
                 break;
             }
-            if (this.array[i+a][j-a] == 0) {
+            if (this.array[i + a][j - a] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[i+a][j-a] % 2 == 1) || (!this.pawn.isEven && this.array[i+a][j-a] % 2 == 0) ) {
-                turnedPin.push([i+a,j-a]);
+            else if ((this.pawn.isEven && this.array[i + a][j - a] % 2 == 1) || (!this.pawn.isEven && this.array[i + a][j - a] % 2 == 0)) {
+                turnedPin.push([i + a, j - a]);
             } else {
                 turnedPin.forEach(coor => {
-                    if (!(this.array[i+a][j-a] in whichPin) && (whichPin[this.array[i+a][j-a]] = [])) { //if not exists
-                        let jenisBidak = (this.turn > this.array[i+a][j-a]) ? this.turn : this.array[i+a][j-a];
+                    if (!(this.array[i + a][j - a] in whichPin) && (whichPin[this.array[i + a][j - a]] = [])) { //if not exists
+                        let jenisBidak = (this.turn > this.array[i + a][j - a]) ? this.turn : this.array[i + a][j - a];
                         whichPin[jenisBidak] = [coor];
                     } else {
-                        whichPin[this.array[i+a][j-a]].push(coor);
+                        whichPin[this.array[i + a][j - a]].push(coor);
                     }
                 })
                 break;
@@ -312,47 +312,47 @@ class Board {
         }
 
         //check top left
-        for (let a = 1; a <= 5-i; a++) {
-            if (i-a < 0 || j-a < 0) {
+        for (let a = 1; a <= 5 - i; a++) {
+            if (i - a < 0 || j - a < 0) {
                 break;
             }
-            if (this.array[i-a][j-a] == 0) {
+            if (this.array[i - a][j - a] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[i-a][j-a] % 2 == 1) || (!this.pawn.isEven && this.array[i-a][j-a] % 2 == 0) ) {
-                turnedPin.push([i-a,j-a]);
+            else if ((this.pawn.isEven && this.array[i - a][j - a] % 2 == 1) || (!this.pawn.isEven && this.array[i - a][j - a] % 2 == 0)) {
+                turnedPin.push([i - a, j - a]);
             } else {
                 turnedPin.forEach(coor => {
-                    if (!(this.array[i-a][j-a] in whichPin) && (whichPin[this.array[i-a][j-a]] = [])) { //if not exists
-                        let jenisBidak = (this.turn > this.array[i-a][j-a]) ? this.turn : this.array[i-a][j-a];
+                    if (!(this.array[i - a][j - a] in whichPin) && (whichPin[this.array[i - a][j - a]] = [])) { //if not exists
+                        let jenisBidak = (this.turn > this.array[i - a][j - a]) ? this.turn : this.array[i - a][j - a];
                         whichPin[jenisBidak] = [coor];
                     } else {
-                        whichPin[this.array[i-a][j-a]].push(coor);
+                        whichPin[this.array[i - a][j - a]].push(coor);
                     }
                 })
                 break;
             }
         }
         //check bottom left
-        for (let a = 1; a <= 5-i; a++) {
-            if (i-a < 0 || j+a > 5) {
+        for (let a = 1; a <= 5 - i; a++) {
+            if (i - a < 0 || j + a > 5) {
                 break;
             }
-            if (this.array[i-a][j+a] == 0) {
+            if (this.array[i - a][j + a] == 0) {
                 turnedPin = [];
                 break;
             }
-            else if ( (this.pawn.isEven && this.array[i-a][j+a] % 2 == 1) || (!this.pawn.isEven && this.array[i-a][j+a] % 2 == 0) ) {
-                turnedPin.push([i-a,j+a]);
-            } 
+            else if ((this.pawn.isEven && this.array[i - a][j + a] % 2 == 1) || (!this.pawn.isEven && this.array[i - a][j + a] % 2 == 0)) {
+                turnedPin.push([i - a, j + a]);
+            }
             else {
                 turnedPin.forEach(coor => {
-                    if (!(this.array[i-a][j+a] in whichPin) && (whichPin[this.array[i-a][j+a]] = [])) { //if not exists
-                        let jenisBidak = (this.turn > this.array[i-a][j+a]) ? this.turn : this.array[i-a][j+a];
+                    if (!(this.array[i - a][j + a] in whichPin) && (whichPin[this.array[i - a][j + a]] = [])) { //if not exists
+                        let jenisBidak = (this.turn > this.array[i - a][j + a]) ? this.turn : this.array[i - a][j + a];
                         whichPin[jenisBidak] = [coor];
                     } else {
-                        whichPin[this.array[i-a][j+a]].push(coor);
+                        whichPin[this.array[i - a][j + a]].push(coor);
                     }
                 })
                 break;
@@ -361,77 +361,64 @@ class Board {
         return whichPin;
     }
 }
-const HUMAN = 1;
-const BOT = 2;
+const HUMAN = 0;
+const BOT = 1;
 
 class OthelloV2 {
     initialConfiguration: Board;
-    array: number[][];
-    turn: number;
-    
-    constructor() {
-        this.array = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 2, 0, 0],
-            [0, 0, 2, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-        ];
-        this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
-        this.turn = 1;
-        this.play(1, 3, 1);
-        console.log("selesai");
-        this.play(2, null, null);
-    }
 
-    play(whoseTurn: number, i: number, j: number) {
-        if (whoseTurn == HUMAN) {
-            this.array[i][j] = this.turn;
-            var totalTurnedPin = this.initialConfiguration.totalTurnedPin(i,j);
-                
-                if (this.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
-                    counter++;                    
-                    var newArray = this.initialConfiguration.generateTurnedArray(totalTurnedPin);
-                    newArray[i][j] = (this.turn == 4) ? 4 : this.turn%4 ;
-                    
-                    var newNode = new Board(this.initialConfiguration, newArray, pawnClass[(this.initialConfiguration.turn%4)+1], 
-                    (this.initialConfiguration.turn%4)+1, !this.initialConfiguration.isMax, this.initialConfiguration.depth+1, [i,j]) ;
-                }
-        }
-
-        if (whoseTurn == BOT) {
-            this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
-        }
+    play(boardArr: number[], turn: number) {
+        this.initialConfiguration = this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
+        console.log(this.initialConfiguration.candidatePoint.coor);
+        return UC.coor;
     }
 
     constructTree() {
     }
 }
 
-var game = new OthelloV2();
+class Main {
+    game: OthelloV2;
+    turnCounter: number;
+    whoseTurn: number;
 
-var turnCounter = 0;
-console.log(turnCounter);
-function clickedPiece(event) {
-    var mod_4 = turnCounter % 4;
-    const element = document.getElementById(event);
-    console.log(mod_4,turnCounter);
-    switch (mod_4) {
-        case 0:
-            element.classList.add("crown-red");
-            break;
-        case 1:
-            element.classList.add("crown-blue");
-            break;
-        case 2:
-            element.classList.add("helmet-red");
-            break;
-        case 3:
-            element.classList.add("helmet-blue");
-            break;
-        default:
-            break;
+    constructor() {
+        this.game = new OthelloV2();
+        this.turnCounter = 0;
+        this.whoseTurn = this.turnCounter % 2;
+        console.log('misael', this.turnCounter);
     }
-    turnCounter++;
+
+    handleClick(event) {
+        const [x, y] = event.split('-');
+        const [nextX, nextY] = this.game.play();
+        this.placePawn(nextX, nextY);
+    }
+
+    placePawn(x: number, y: number) {
+        const cssClass = x + '-' + y;
+        var mod_4 = this.turnCounter % 4;
+        const element = document.getElementById(cssClass);
+        console.log(mod_4, this.turnCounter);
+        switch (mod_4) {
+            case 0:
+                element.classList.add("crown-red");
+                break;
+            case 1:
+                element.classList.add("crown-blue");
+                break;
+            case 2:
+                element.classList.add("helmet-red");
+                break;
+            case 3:
+                element.classList.add("helmet-blue");
+                break;
+            default:
+                break;
+        }
+        this.turnCounter++;
+        if (this.whoseTurn == 1) {
+            this.game.play()
+        }
+    }
 }
