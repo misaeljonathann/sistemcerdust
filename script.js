@@ -21,11 +21,11 @@ var UtilityCoor = /** @class */ (function () {
 }());
 var counter = 1;
 var Board = /** @class */ (function () {
-    function Board(parent, array, pawn, turn, bool, depth, move) {
+    function Board(parent, array, turn, bool, depth, move) {
         this.child = [];
         this.parent = parent;
         this.array = array;
-        this.pawn = pawn;
+        this.pawn = pawnClass[turn];
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array);
         this.isMax = bool;
@@ -52,7 +52,8 @@ var Board = /** @class */ (function () {
         this.child.push(newChild);
     };
     Board.prototype.generateChild = function (alpha, beta) {
-        if (this.depth == 4) {
+        if (this.depth == 3) {
+            console.log("LEAF : ", this.move);
             return new UtilityCoor(this.utilityPoint, this.move);
         }
         for (var i = 0; i < 6; i++) {
@@ -62,7 +63,7 @@ var Board = /** @class */ (function () {
                     counter++;
                     var newArray = this.generateTurnedArray(totalTurnedPin);
                     newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
-                    var newNode = new Board(this, newArray, pawnClass[(this.turn % 4) + 1], (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
+                    var newNode = new Board(this, newArray, (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
                     this.addChild(newNode);
                 }
             }
@@ -70,16 +71,18 @@ var Board = /** @class */ (function () {
         console.log(this.array);
         console.log(this.depth);
         if (this.isMax) {
-            var valMax = Number.MIN_VALUE;
+            var valMax = -1000000;
             var coor = void 0;
+            // debugger
             for (var _i = 0, _a = this.child; _i < _a.length; _i++) {
                 var child = _a[_i];
                 var nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
                     coor = nextMove.coor;
+                    console.log("duar2 ", coor);
                     if (valMax >= beta)
-                        return new UtilityCoor(valMax, null);
+                        return new UtilityCoor(valMax, child.move);
                     alpha = Math.max(alpha, valMax);
                 }
             }
@@ -94,8 +97,9 @@ var Board = /** @class */ (function () {
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
                     coor = nextMove.coor;
+                    console.log("duar ", coor);
                     if (valMin <= beta)
-                        return new UtilityCoor(valMin, null);
+                        return new UtilityCoor(valMin, child.move);
                     beta = Math.min(beta, valMin);
                 }
             }
@@ -143,7 +147,7 @@ var Board = /** @class */ (function () {
             }
             else {
                 turnedPin.forEach(function (coor) {
-                    //whichPin[this.array[x][j]].push(coor);
+                    //whichPin[this.array[x][j]].push(coor)
                     if (!(_this.array[x][j] in whichPin) && (whichPin[_this.array[x][j]] = [])) { //if not exists
                         if (_this.turn > _this.array[x][j] || _this.turn < _this.array[x][j]) {
                             whichPin[_this.turn] = [coor];
@@ -369,57 +373,74 @@ var Board = /** @class */ (function () {
     };
     return Board;
 }());
-var HUMAN = 0;
-var BOT = 1;
 var OthelloV2 = /** @class */ (function () {
     function OthelloV2() {
     }
-    OthelloV2.prototype.play = function (boardArr, turn) {
-        this.initialConfiguration = this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
-        console.log(this.initialConfiguration.candidatePoint.coor);
-        return UC.coor;
-    };
-    OthelloV2.prototype.constructTree = function () {
+    // main class : ubah array, ubah turn.
+    OthelloV2.prototype.botPlay = function (array, turn) {
+        this.boardState = new Board(null, array, turn, true, 1, [null, null]);
+        this.boardState.candidatePoint = this.boardState.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
+        console.log(this.boardState.candidatePoint);
+        return this.boardState.candidatePoint.coor;
     };
     return OthelloV2;
 }());
 var Main = /** @class */ (function () {
     function Main() {
+        this.boardArr = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 2, 0, 0],
+            [0, 0, 2, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]
+        ];
         this.game = new OthelloV2();
-        this.turnCounter = 0;
-        this.whoseTurn = this.turnCounter % 2;
-        console.log('misael', this.turnCounter);
+        // this.turnCounter = 1;
+        this.pawnType = 1;
+        this.isBot = true;
+        if (this.isBot) {
+            this.placePawn(0, 0);
+        }
+        // console.log('misael', this.turnCounter);
     }
-    Main.prototype.handleClick = function (event) {
-        var _a = event.split('-'), x = _a[0], y = _a[1];
-        var _b = this.game.play(), nextX = _b[0], nextY = _b[1];
-        this.placePawn(nextX, nextY);
-    };
     Main.prototype.placePawn = function (x, y) {
+        var _a;
+        if (this.isBot) {
+            _a = this.game.botPlay(this.boardArr, this.pawnType), x = _a[0], y = _a[1];
+        }
+        console.log("xy : ", x, y);
+        this.boardArr[x][y] = this.pawnType;
+        this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, this.isBot, 1, [null, null]);
         var cssClass = x + '-' + y;
-        var mod_4 = this.turnCounter % 4;
         var element = document.getElementById(cssClass);
-        console.log(mod_4, this.turnCounter);
-        switch (mod_4) {
-            case 0:
+        switch (this.pawnType) {
+            case 1:
                 element.classList.add("crown-red");
                 break;
-            case 1:
+            case 2:
                 element.classList.add("crown-blue");
                 break;
-            case 2:
+            case 3:
                 element.classList.add("helmet-red");
                 break;
-            case 3:
+            case 4:
                 element.classList.add("helmet-blue");
                 break;
             default:
                 break;
         }
-        this.turnCounter++;
-        if (this.whoseTurn == 1) {
-            this.game.play();
-        }
+        console.log('giliran sokap :', this.isBot ? 'Bot' : 'Human');
+        this.isBot = !this.isBot;
+        this.pawnType = (this.pawnType % 4) + 1;
     };
     return Main;
 }());
+var main = new Main();
+console.log('giliran sokap :', this.main.isBot ? 'Bot' : 'Human');
+function handleClick(coor) {
+    var _a = coor.split('-'), x = _a[0], y = _a[1];
+    this.main.placePawn(x, y);
+}
+function mikir() {
+}

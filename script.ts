@@ -44,10 +44,10 @@ class Board {
     depth: number;
     move: [number, number];
 
-    constructor(parent: Board, array: number[][], pawn: pawnType, turn: number, bool: boolean, depth: number, move: [number, number]) {
+    constructor(parent: Board, array: number[][], turn: number, bool: boolean, depth: number, move: [number, number]) {
         this.parent = parent;
         this.array = array;
-        this.pawn = pawn;
+        this.pawn = pawnClass[turn];
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array);
         this.isMax = bool;
@@ -78,7 +78,8 @@ class Board {
 
     generateChild(alpha: number, beta: number) {
 
-        if (this.depth == 4) {
+        if (this.depth == 3) {
+            console.log("LEAF : ", this.move);
             return new UtilityCoor(this.utilityPoint, this.move);
         }
 
@@ -89,26 +90,26 @@ class Board {
 
                     counter++;
                     var newArray = this.generateTurnedArray(totalTurnedPin);
-                    newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
-
-                    var newNode = new Board(this, newArray, pawnClass[(this.turn % 4) + 1], (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
+                    newArray[i][j] = (this.turn == 4) ? 4 : this.turn%4;
+                    
+                    var newNode = new Board(this, newArray, (this.turn%4)+1, !this.isMax, this.depth+1, [i,j]) ;
                     this.addChild(newNode);
                 }
             }
         }
         console.log(this.array);
         console.log(this.depth);
-
         if (this.isMax) {
-            let valMax = Number.MIN_VALUE;
+            let valMax = -1000000;
             let coor;
+            // debugger
             for (let child of this.child) {
                 let nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
                     coor = nextMove.coor;
-
-                    if (valMax >= beta) return new UtilityCoor(valMax, null);
+                    console.log("duar2 ",coor);
+                    if (valMax >= beta) return new UtilityCoor(valMax, child.move);
                     alpha = Math.max(alpha, valMax);
                 }
             }
@@ -123,8 +124,8 @@ class Board {
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
                     coor = nextMove.coor;
-
-                    if (valMin <= beta) return new UtilityCoor(valMin, null);
+                    console.log("duar ",coor);
+                    if (valMin <= beta) return new UtilityCoor(valMin, child.move);
                     beta = Math.min(beta, valMin);
                 }
             }
@@ -172,7 +173,7 @@ class Board {
                 turnedPin.push([x, j]);
             } else {
                 turnedPin.forEach(coor => {
-                    //whichPin[this.array[x][j]].push(coor);
+                    //whichPin[this.array[x][j]].push(coor)
                     if (!(this.array[x][j] in whichPin) && (whichPin[this.array[x][j]] = [])) { //if not exists
                         if (this.turn > this.array[x][j] || this.turn < this.array[x][j]) {
                             whichPin[this.turn] = [coor];
@@ -361,64 +362,87 @@ class Board {
         return whichPin;
     }
 }
-const HUMAN = 0;
-const BOT = 1;
 
 class OthelloV2 {
-    initialConfiguration: Board;
+    boardState: Board;
 
-    play(boardArr: number[], turn: number) {
-        this.initialConfiguration = this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
-        console.log(this.initialConfiguration.candidatePoint.coor);
-        return UC.coor;
-    }
-
-    constructTree() {
+    // main class : ubah array, ubah turn.
+    botPlay(array: number[][], turn: number) {
+        this.boardState = new Board(null, array, turn, true, 1, [null, null])
+        this.boardState.candidatePoint = this.boardState.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
+        console.log(this.boardState.candidatePoint);
+        return this.boardState.candidatePoint.coor;
     }
 }
 
 class Main {
     game: OthelloV2;
-    turnCounter: number;
-    whoseTurn: number;
+    // turnCounter: number;
+    pawnType: number;
+    boardArr: number[][];
+    isBot: boolean;
 
     constructor() {
+        this.boardArr = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 2, 0, 0],
+            [0, 0, 2, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]
+        ]
         this.game = new OthelloV2();
-        this.turnCounter = 0;
-        this.whoseTurn = this.turnCounter % 2;
-        console.log('misael', this.turnCounter);
-    }
-
-    handleClick(event) {
-        const [x, y] = event.split('-');
-        const [nextX, nextY] = this.game.play();
-        this.placePawn(nextX, nextY);
+        // this.turnCounter = 1;
+        this.pawnType = 1;
+        this.isBot = true;
+        if(this.isBot) {
+            this.placePawn(0,0);
+        }
+        // console.log('misael', this.turnCounter);
     }
 
     placePawn(x: number, y: number) {
+        if (this.isBot) {
+            [x,y] = this.game.botPlay(this.boardArr, this.pawnType);
+        }
+        console.log("xy : ",x,y);
+        this.boardArr[x][y] = this.pawnType;
+        this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, this.isBot, 1, [null, null]);
+
         const cssClass = x + '-' + y;
-        var mod_4 = this.turnCounter % 4;
         const element = document.getElementById(cssClass);
-        console.log(mod_4, this.turnCounter);
-        switch (mod_4) {
-            case 0:
-                element.classList.add("crown-red");
-                break;
+        switch (this.pawnType) {
             case 1:
+                element.classList.add("crown-red");
+                break
+            case 2:
                 element.classList.add("crown-blue");
                 break;
-            case 2:
+            case 3:
                 element.classList.add("helmet-red");
                 break;
-            case 3:
+            case 4:
                 element.classList.add("helmet-blue");
                 break;
             default:
                 break;
         }
-        this.turnCounter++;
-        if (this.whoseTurn == 1) {
-            this.game.play()
-        }
+
+        console.log('giliran sokap :', this.isBot? 'Bot': 'Human');
+        this.isBot = !this.isBot;
+        this.pawnType = (this.pawnType % 4) + 1;
     }
+
+}
+
+const main = new Main();
+console.log('giliran sokap :', this.main.isBot? 'Bot': 'Human');
+
+function handleClick(coor) {
+    const [x, y] = coor.split('-');
+    this.main.placePawn(x, y);
+}
+
+function mikir() {
+
 }
