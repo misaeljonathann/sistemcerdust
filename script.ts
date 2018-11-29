@@ -111,7 +111,7 @@ class Board {
                     if (valMax >= beta) return new UtilityCoor(valMax, null);
                     alpha = Math.max(alpha, valMax);
                 }
-            })
+            }
             return new UtilityCoor(valMax, coor);
         } 
 
@@ -127,7 +127,7 @@ class Board {
                     if (valMin <= beta) return new UtilityCoor(valMin, null);
                     beta = Math.min(beta, valMin);
                 }
-            })
+            }
             return new UtilityCoor(valMin, coor);
         }
         // if (counter >= 15) {
@@ -367,7 +367,7 @@ const BOT = 2;
 class OthelloV2 {
     initialConfiguration: Board;
     array: number[][];
-    counter = 1;
+    turn: 1;
     
     constructor() {
         this.array = [

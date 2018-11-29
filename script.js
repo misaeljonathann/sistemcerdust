@@ -373,7 +373,6 @@ var HUMAN = 1;
 var BOT = 2;
 var OthelloV2 = /** @class */ (function () {
     function OthelloV2() {
-        this.counter = 1;
         this.array = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
