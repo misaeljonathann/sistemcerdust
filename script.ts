@@ -107,8 +107,7 @@ class Board {
                 let nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
-                    coor = nextMove.coor;
-                    console.log("duar2 ",coor);
+                    coor = child.move;
                     if (valMax >= beta) return new UtilityCoor(valMax, child.move);
                     alpha = Math.max(alpha, valMax);
                 }
@@ -123,22 +122,13 @@ class Board {
                 let nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
-                    coor = nextMove.coor;
-                    console.log("duar ",coor);
+                    coor = child.move;
                     if (valMin <= beta) return new UtilityCoor(valMin, child.move);
                     beta = Math.min(beta, valMin);
                 }
             }
             return new UtilityCoor(valMin, coor);
         }
-        // if (counter >= 15) {
-        //     return 0;
-        // }
-        // console.log(this.utilityPoint);
-        // console.log(this.array);
-        // this.child.forEach(path => {
-        //     path.generateChild();
-        // });
     }
 
     generateTurnedArray(paths: { [pawn: number]: number[][] }): number[][] {
@@ -368,29 +358,19 @@ class OthelloV2 {
 
     // main class : ubah array, ubah turn.
     botPlay(array: number[][], turn: number) {
-        this.boardState = new Board(null, array, turn, true, 1, [null, null])
+        this.boardState = new Board(null, array, turn, true, 1, [null, null]);
         this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
         console.log(this.boardState.candidatePoint);
         return this.boardState.candidatePoint.coor;
-        // const array = [
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 1, 2, 0, 0],
-        //     [0, 0, 2, 1, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        // ];
-
-        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     }
 }
 
 class Main {
     game: OthelloV2;
-    // turnCounter: number;
     pawnType: number;
     boardArr: number[][];
     isBot: boolean;
+    possibleMove: number[][] = [];
 
     constructor() {
         this.boardArr = [
@@ -402,13 +382,11 @@ class Main {
             [0, 0, 0, 0, 0, 0]
         ]
         this.game = new OthelloV2();
-        // this.turnCounter = 1;
         this.pawnType = 1;
         this.isBot = true;
         if(this.isBot) {
             this.placePawn(0,0);
         }
-        // console.log('misael', this.turnCounter);
     }
 
     placePawn(x: number, y: number) {
@@ -441,8 +419,20 @@ class Main {
         console.log('giliran sokap :', this.isBot? 'Bot': 'Human');
         this.isBot = !this.isBot;
         this.pawnType = (this.pawnType % 4) + 1;
+        
+        if (!this.isBot) {
+            this.possibleMove = [];
+            for (var i = 0; i < 6; i++) {
+                for (var j = 0; j < 6; j++) {
+                    var totalTurnedPin = this.game.boardState.totalTurnedPin(i, j);
+                    if (this.game.boardState.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
+                        this.possibleMove.push([i,j]);
+                    }
+                }
+            }
+            return this.possibleMove;
+        }
     }
-
 }
 
 const main = new Main();

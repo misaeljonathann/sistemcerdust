@@ -79,8 +79,7 @@ var Board = /** @class */ (function () {
                 var nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
-                    coor = nextMove.coor;
-                    console.log("duar2 ", coor);
+                    coor = child.move;
                     if (valMax >= beta)
                         return new UtilityCoor(valMax, child.move);
                     alpha = Math.max(alpha, valMax);
@@ -96,8 +95,7 @@ var Board = /** @class */ (function () {
                 var nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
-                    coor = nextMove.coor;
-                    console.log("duar ", coor);
+                    coor = child.move;
                     if (valMin <= beta)
                         return new UtilityCoor(valMin, child.move);
                     beta = Math.min(beta, valMin);
@@ -105,14 +103,6 @@ var Board = /** @class */ (function () {
             }
             return new UtilityCoor(valMin, coor);
         }
-        // if (counter >= 15) {
-        //     return 0;
-        // }
-        // console.log(this.utilityPoint);
-        // console.log(this.array);
-        // this.child.forEach(path => {
-        //     path.generateChild();
-        // });
     };
     Board.prototype.generateTurnedArray = function (paths) {
         var newArray = this.array.map(function (arr) {
@@ -382,20 +372,12 @@ var OthelloV2 = /** @class */ (function () {
         this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
         console.log(this.boardState.candidatePoint);
         return this.boardState.candidatePoint.coor;
-        // const array = [
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 1, 2, 0, 0],
-        //     [0, 0, 2, 1, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        // ];
-        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     };
     return OthelloV2;
 }());
 var Main = /** @class */ (function () {
     function Main() {
+        this.possibleMove = [];
         this.boardArr = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
@@ -405,13 +387,11 @@ var Main = /** @class */ (function () {
             [0, 0, 0, 0, 0, 0]
         ];
         this.game = new OthelloV2();
-        // this.turnCounter = 1;
         this.pawnType = 1;
         this.isBot = true;
         if (this.isBot) {
             this.placePawn(0, 0);
         }
-        // console.log('misael', this.turnCounter);
     }
     Main.prototype.placePawn = function (x, y) {
         var _a;
@@ -442,6 +422,18 @@ var Main = /** @class */ (function () {
         console.log('giliran sokap :', this.isBot ? 'Bot' : 'Human');
         this.isBot = !this.isBot;
         this.pawnType = (this.pawnType % 4) + 1;
+        if (!this.isBot) {
+            this.possibleMove = [];
+            for (var i = 0; i < 6; i++) {
+                for (var j = 0; j < 6; j++) {
+                    var totalTurnedPin = this.game.boardState.totalTurnedPin(i, j);
+                    if (this.game.boardState.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
+                        this.possibleMove.push([i, j]);
+                    }
+                }
+            }
+            return this.possibleMove;
+        }
     };
     return Main;
 }());
