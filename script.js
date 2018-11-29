@@ -70,7 +70,7 @@ var Board = /** @class */ (function () {
         console.log(this.array);
         console.log(this.depth);
         if (this.isMax) {
-            var valMax = Number.MIN_SAFE_INTEGER;
+            var valMax = Number.MIN_VALUE;
             var coor = void 0;
             for (var _i = 0, _a = this.child; _i < _a.length; _i++) {
                 var child = _a[_i];
@@ -86,7 +86,7 @@ var Board = /** @class */ (function () {
             return new UtilityCoor(valMax, coor);
         }
         else {
-            var valMin = Number.MAX_SAFE_INTEGER;
+            var valMin = Number.MAX_VALUE;
             var coor = void 0;
             for (var _b = 0, _c = this.child; _b < _c.length; _b++) {
                 var child = _c[_b];
@@ -382,18 +382,52 @@ var OthelloV2 = /** @class */ (function () {
             [0, 0, 0, 0, 0, 0],
         ];
         this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
+        this.turn = 1;
+        this.play(1, 3, 1);
+        console.log("selesai");
+        this.play(2, null, null);
     }
-    OthelloV2.prototype.play = function (whoseTurn) {
+    OthelloV2.prototype.play = function (whoseTurn, i, j) {
         if (whoseTurn == HUMAN) {
-            this.array[i][j] =
-            ;
+            this.array[i][j] = this.turn;
+            var totalTurnedPin = this.initialConfiguration.totalTurnedPin(i, j);
+            if (this.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
+                counter++;
+                var newArray = this.initialConfiguration.generateTurnedArray(totalTurnedPin);
+                newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
+                var newNode = new Board(this.initialConfiguration, newArray, pawnClass[(this.initialConfiguration.turn % 4) + 1], (this.initialConfiguration.turn % 4) + 1, !this.initialConfiguration.isMax, this.initialConfiguration.depth + 1, [i, j]);
+            }
+        }
+        if (whoseTurn == BOT) {
+            this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
         }
     };
     OthelloV2.prototype.constructTree = function () {
-        if (whoseTurn == BOT) {
-            this.initialConfiguration.generateChild(Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-        }
     };
     return OthelloV2;
 }());
 var game = new OthelloV2();
+var turnCounter = 0;
+console.log(turnCounter);
+function clickedPiece(event) {
+    var mod_4 = turnCounter % 4;
+    var element = document.getElementById(event);
+    console.log(mod_4, turnCounter);
+    switch (mod_4) {
+        case 0:
+            element.classList.add("crown-red");
+            break;
+        case 1:
+            element.classList.add("crown-blue");
+            break;
+        case 2:
+            element.classList.add("helmet-red");
+            break;
+        case 3:
+            element.classList.add("helmet-blue");
+            break;
+        default:
+            break;
+    }
+    turnCounter++;
+}
