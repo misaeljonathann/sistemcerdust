@@ -89,7 +89,7 @@ var Board = /** @class */ (function () {
             return new UtilityCoor(valMax, coor);
         }
         else {
-            var valMin = Number.MAX_VALUE;
+            var valMin = 10000000;
             var coor = void 0;
             for (var _b = 0, _c = this.child; _b < _c.length; _b++) {
                 var child = _c[_b];
@@ -379,9 +379,18 @@ var OthelloV2 = /** @class */ (function () {
     // main class : ubah array, ubah turn.
     OthelloV2.prototype.botPlay = function (array, turn) {
         this.boardState = new Board(null, array, turn, true, 1, [null, null]);
-        this.boardState.candidatePoint = this.boardState.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
+        this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
         console.log(this.boardState.candidatePoint);
         return this.boardState.candidatePoint.coor;
+        // const array = [
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 1, 2, 0, 0],
+        //     [0, 0, 2, 1, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        // ];
+        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     };
     return OthelloV2;
 }());

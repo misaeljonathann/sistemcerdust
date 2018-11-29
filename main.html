@@ -5,12 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Othello 2.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Baloo|Permanent+Marker" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
 <body>
+    <div class="header">
+        <h1>OthelloV2</h1>
+        <h3>Where magic happens...</h3>
+    </div>
     <div class="container">
         <div class="user-domain">
-
+            <h1>OthelloV2 Dashboard</h1><hr>
+            <h2>Choose your turn:</h2>  
+            <input type="radio" name="user_turn" id="first" value="first"><label for="first" id="first">First</label>
+            <input type="radio" name="user_turn" id="second" value="second"><label for="second" id="second">Second</label>
+            <h2>Choose your bot's difficulty: </h2>
+            <input type="radio" name="bot_difficulty" id="easy" value="easy"><label for="easy" id="easy">Easy</label>
+            <input type="radio" name="bot_difficulty" id="medium" value="medium"><label for="medium" id="medium">Medium</label>
+            <input type="radio" name="bot_difficulty" id="hard" value="hard"><label for="hard" id="hard">Hard</label><br>
+            <div class="control-container">
+                <button class="control" id="play">Play</button>
+                <button class="control" id="undo">Undo</button>
+            </div>
         </div>
         <div class="board-domain">
             <table class="board">
@@ -202,8 +218,10 @@
                 </tr>
             </table>
         </div>
-        <div class="bot-domain">
-            .
+        <div class="result">
+            <h1>Current result :</h1><hr>
+            <h2>User : </h2>
+            <h2>Bot : </h2>
         </div>
     </div>
     <script src="script.js"></script>

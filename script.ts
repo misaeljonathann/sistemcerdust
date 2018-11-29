@@ -117,7 +117,7 @@ class Board {
         }
 
         else {
-            let valMin = Number.MAX_VALUE;
+            let valMin = 10000000;
             let coor;
             for (let child of this.child) {
                 let nextMove = child.generateChild(alpha, beta);
@@ -369,9 +369,19 @@ class OthelloV2 {
     // main class : ubah array, ubah turn.
     botPlay(array: number[][], turn: number) {
         this.boardState = new Board(null, array, turn, true, 1, [null, null])
-        this.boardState.candidatePoint = this.boardState.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
+        this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
         console.log(this.boardState.candidatePoint);
         return this.boardState.candidatePoint.coor;
+        // const array = [
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 1, 2, 0, 0],
+        //     [0, 0, 2, 1, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        // ];
+
+        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     }
 }
 

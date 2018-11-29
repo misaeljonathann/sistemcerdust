@@ -2,7 +2,13 @@ body, html {
     margin: 0;
     max-width: 100vw;
     height: 100vh;
-    background:	#00ff7f;
+    font-family: 'Baloo', cursive;
+    color:white;    
+    background:#4d136d;
+}
+
+.header {
+    text-align: center;
 }
 
 .container {
@@ -10,13 +16,13 @@ body, html {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;  
-    height: 100%; 
+    height: 80%; 
 }
 
 .board-domain {
     padding: 1rem;
-    width: 50%;
-    height: 80%;
+    width: 500px;
+    height: 500px;
 }
 
 .board {
@@ -29,8 +35,8 @@ body, html {
     width: 100%;
 }
 .board .column {
-    background:#00c000;
-    border: 1px solid #008000;
+    background:	#bcafe7;
+    border: 1px solid black;
     height: 16%;
     width: 16%; 
 }
@@ -60,3 +66,65 @@ body, html {
     height: 100%;
 }    
 
+.user-domain, .result {
+    background:#911cb0;
+    padding: 1rem;
+    border-radius: 10%;
+}
+
+label {
+    background-color:#bcafe7;
+    text-transform: uppercase;
+    border-radius: 0.2em;
+    padding: 0.2em;
+}
+#first{
+    color: red;
+}
+
+#second {
+    color: blue;
+}
+
+#easy {
+    color: 	#820de7;
+}
+
+#medium {
+    color :#580c7a;
+}
+
+#hard {
+    color: #170954;
+}
+
+
+h1,h2,h3 {
+    margin: 0em 0 0em 0;
+}
+
+hr {
+    opacity: 0.3;
+}
+
+.control-container {
+    margin-top: 2em;
+    text-align: center; 
+}
+
+.control {
+    font-size: 1.5em;
+    padding: 0.4em;
+    border: none;
+    border-radius : 0.3em;
+    font-family: inherit;
+    color: white;
+}
+
+#play {
+    background:#170954;
+}
+
+#undo {
+    background: #580c7a;
+}
