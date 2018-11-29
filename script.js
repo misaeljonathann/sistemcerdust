@@ -21,11 +21,11 @@ var UtilityCoor = /** @class */ (function () {
 }());
 var counter = 1;
 var Board = /** @class */ (function () {
-    function Board(parent, array, pawn, turn, bool, depth, move) {
+    function Board(parent, array, turn, bool, depth, move) {
         this.child = [];
         this.parent = parent;
         this.array = array;
-        this.pawn = pawn;
+        this.pawn = pawnClass[turn];
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array);
         this.isMax = bool;
@@ -62,7 +62,7 @@ var Board = /** @class */ (function () {
                     counter++;
                     var newArray = this.generateTurnedArray(totalTurnedPin);
                     newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
-                    var newNode = new Board(this, newArray, pawnClass[(this.turn % 4) + 1], (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
+                    var newNode = new Board(this, newArray, (this.turn % 4) + 1, !this.isMax, this.depth + 1, [i, j]);
                     this.addChild(newNode);
                 }
             }
@@ -369,38 +369,24 @@ var Board = /** @class */ (function () {
     };
     return Board;
 }());
-var HUMAN = 1;
-var BOT = 2;
+var HUMAN = 0;
+var BOT = 1;
 var OthelloV2 = /** @class */ (function () {
     function OthelloV2() {
-        this.array = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 2, 0, 0],
-            [0, 0, 2, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-        ];
-        this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
-        this.turn = 1;
-        this.play(1, 3, 1);
-        console.log("selesai");
-        this.play(2, null, null);
+        // const array = [
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 1, 2, 0, 0],
+        //     [0, 0, 2, 1, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        //     [0, 0, 0, 0, 0, 0],
+        // ];
+        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     }
-    OthelloV2.prototype.play = function (whoseTurn, i, j) {
-        if (whoseTurn == HUMAN) {
-            this.array[i][j] = this.turn;
-            var totalTurnedPin = this.initialConfiguration.totalTurnedPin(i, j);
-            if (this.array[i][j] == 0 && totalTurnedPin && Object.keys(totalTurnedPin).length > 0) {
-                counter++;
-                var newArray = this.initialConfiguration.generateTurnedArray(totalTurnedPin);
-                newArray[i][j] = (this.turn == 4) ? 4 : this.turn % 4;
-                var newNode = new Board(this.initialConfiguration, newArray, pawnClass[(this.initialConfiguration.turn % 4) + 1], (this.initialConfiguration.turn % 4) + 1, !this.initialConfiguration.isMax, this.initialConfiguration.depth + 1, [i, j]);
-            }
-        }
-        if (whoseTurn == BOT) {
-            this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
-        }
+    // main class : ubah array, ubah turn.
+    OthelloV2.prototype.play = function (array, turn) {
+        this.initialConfiguration = new Board(null, array, turn, true, 1, [null, null]);
+        this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
     };
     OthelloV2.prototype.constructTree = function () {
     };
