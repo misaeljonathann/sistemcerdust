@@ -76,7 +76,7 @@ class Board {
         this.child.push(newChild);
     }
 
-    generateChild() {
+    generateChild(alpha: number, beta: number) {
 
         if (this.depth == 4) {
             return new UtilityCoor(this.utilityPoint, this.move);
@@ -100,26 +100,32 @@ class Board {
         console.log(this.depth);
         
         if (this.isMax) {
-            let valMax = 0;
+            let valMax = Number.MIN_SAFE_INTEGER;
             let coor;
-            this.child.forEach(child => {
-                let nextMove = child.generateChild();
+            for (let child of this.child){
+                let nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
                     coor = nextMove.coor;
+                    
+                    if (valMax >= beta) return new UtilityCoor(valMax, null);
+                    alpha = Math.max(alpha, valMax);
                 }
             })
             return new UtilityCoor(valMax, coor);
         } 
 
         else {
-            let valMin = 10000000;
+            let valMin = Number.MAX_SAFE_INTEGER;
             let coor;
-            this.child.forEach(child => {
-                let nextMove = child.generateChild();
+            for (let child of this.child) {
+                let nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
                     coor = nextMove.coor;
+                    
+                    if (valMin <= beta) return new UtilityCoor(valMin, null);
+                    beta = Math.min(beta, valMin);
                 }
             })
             return new UtilityCoor(valMin, coor);
@@ -355,14 +361,16 @@ class Board {
         return whichPin;
     }
 }
+const HUMAN = 1;
+const BOT = 2;
 
 class OthelloV2 {
     initialConfiguration: Board;
+    array: number[][];
     counter = 1;
-
-
+    
     constructor() {
-        const array = [
+        this.array = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 1, 2, 0, 0],
@@ -370,17 +378,20 @@ class OthelloV2 {
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ];
-        this.initialConfiguration = new Board(null, array, new pawnType(false, true), 1, true, 1, [null, null]);
-        this.constructTree();
+        this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
+    }
+
+    play(whoseTurn: number) {
+        if (whoseTurn == HUMAN) {
+            this.array[i][j] = 
+        }
     }
 
     constructTree() {
-        this.initialConfiguration.generateChild();
-        // this.initialConfiguration.child.forEach(array => {
-        //     console.log(array.array);
-        // });
+        if (whoseTurn == BOT) {
+            this.initialConfiguration.generateChild(Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        }
     }
-
 }
 
 var game = new OthelloV2();

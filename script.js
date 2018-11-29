@@ -51,7 +51,7 @@ var Board = /** @class */ (function () {
     Board.prototype.addChild = function (newChild) {
         this.child.push(newChild);
     };
-    Board.prototype.generateChild = function () {
+    Board.prototype.generateChild = function (alpha, beta) {
         if (this.depth == 4) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
@@ -70,28 +70,36 @@ var Board = /** @class */ (function () {
         console.log(this.array);
         console.log(this.depth);
         if (this.isMax) {
-            var valMax_1 = 0;
-            var coor_1;
-            this.child.forEach(function (child) {
-                var nextMove = child.generateChild();
-                if (nextMove.point > valMax_1) {
-                    valMax_1 = nextMove.point;
-                    coor_1 = nextMove.coor;
+            var valMax = Number.MIN_SAFE_INTEGER;
+            var coor = void 0;
+            for (var _i = 0, _a = this.child; _i < _a.length; _i++) {
+                var child = _a[_i];
+                var nextMove = child.generateChild(alpha, beta);
+                if (nextMove.point > valMax) {
+                    valMax = nextMove.point;
+                    coor = nextMove.coor;
+                    if (valMax >= beta)
+                        return new UtilityCoor(valMax, null);
+                    alpha = Math.max(alpha, valMax);
                 }
-            });
-            return new UtilityCoor(valMax_1, coor_1);
+            }
+            return new UtilityCoor(valMax, coor);
         }
         else {
-            var valMin_1 = 10000000;
-            var coor_2;
-            this.child.forEach(function (child) {
-                var nextMove = child.generateChild();
-                if (nextMove.point < valMin_1) {
-                    valMin_1 = nextMove.point;
-                    coor_2 = nextMove.coor;
+            var valMin = Number.MAX_SAFE_INTEGER;
+            var coor = void 0;
+            for (var _b = 0, _c = this.child; _b < _c.length; _b++) {
+                var child = _c[_b];
+                var nextMove = child.generateChild(alpha, beta);
+                if (nextMove.point < valMin) {
+                    valMin = nextMove.point;
+                    coor = nextMove.coor;
+                    if (valMin <= beta)
+                        return new UtilityCoor(valMin, null);
+                    beta = Math.min(beta, valMin);
                 }
-            });
-            return new UtilityCoor(valMin_1, coor_2);
+            }
+            return new UtilityCoor(valMin, coor);
         }
         // if (counter >= 15) {
         //     return 0;
@@ -361,10 +369,12 @@ var Board = /** @class */ (function () {
     };
     return Board;
 }());
+var HUMAN = 1;
+var BOT = 2;
 var OthelloV2 = /** @class */ (function () {
     function OthelloV2() {
         this.counter = 1;
-        var array = [
+        this.array = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 1, 2, 0, 0],
@@ -372,14 +382,18 @@ var OthelloV2 = /** @class */ (function () {
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ];
-        this.initialConfiguration = new Board(null, array, new pawnType(false, true), 1, true, 1, [null, null]);
-        this.constructTree();
+        this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
     }
+    OthelloV2.prototype.play = function (whoseTurn) {
+        if (whoseTurn == HUMAN) {
+            this.array[i][j] =
+            ;
+        }
+    };
     OthelloV2.prototype.constructTree = function () {
-        this.initialConfiguration.generateChild();
-        // this.initialConfiguration.child.forEach(array => {
-        //     console.log(array.array);
-        // });
+        if (whoseTurn == BOT) {
+            this.initialConfiguration.generateChild(Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        }
     };
     return OthelloV2;
 }());
