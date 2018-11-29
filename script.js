@@ -79,7 +79,7 @@ var Board = /** @class */ (function () {
                 var nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
-                    coor = nextMove.coor;
+                    coor = child.move;
                     console.log("duar2 ", coor);
                     if (valMax >= beta)
                         return new UtilityCoor(valMax, child.move);
@@ -96,7 +96,7 @@ var Board = /** @class */ (function () {
                 var nextMove = child.generateChild(alpha, beta);
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
-                    coor = nextMove.coor;
+                    coor = child.move;
                     console.log("duar ", coor);
                     if (valMin <= beta)
                         return new UtilityCoor(valMin, child.move);
@@ -407,41 +407,28 @@ var Main = /** @class */ (function () {
         this.game = new OthelloV2();
         // this.turnCounter = 1;
         this.pawnType = 1;
-        this.isBot = true;
-        if (this.isBot) {
-            this.placePawn(0, 0);
-        }
+        this.isBot = false; // who first?
         // console.log('misael', this.turnCounter);
     }
     Main.prototype.placePawn = function (x, y) {
-        var _a;
-        if (this.isBot) {
-            _a = this.game.botPlay(this.boardArr, this.pawnType), x = _a[0], y = _a[1];
-        }
-        console.log("xy : ", x, y);
         this.boardArr[x][y] = this.pawnType;
-        this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, this.isBot, 1, [null, null]);
-        var cssClass = x + '-' + y;
-        var element = document.getElementById(cssClass);
-        switch (this.pawnType) {
-            case 1:
-                element.classList.add("crown-red");
-                break;
-            case 2:
-                element.classList.add("crown-blue");
-                break;
-            case 3:
-                element.classList.add("helmet-red");
-                break;
-            case 4:
-                element.classList.add("helmet-blue");
-                break;
-            default:
-                break;
-        }
-        console.log('giliran sokap :', this.isBot ? 'Bot' : 'Human');
-        this.isBot = !this.isBot;
+        this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
+        console.log("xy : ", x, y);
+        display(x, y);
         this.pawnType = (this.pawnType % 4) + 1;
+        this.botTurn();
+    };
+    Main.prototype.botTurn = function () {
+        var _this = this;
+        var _a = this.game.botPlay(this.boardArr, this.pawnType), x = _a[0], y = _a[1];
+        this.boardArr[x][y] = this.pawnType;
+        this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, true, 1, [null, null]);
+        console.log("xy : ", x, y);
+        setTimeout(function () {
+            display(x, y);
+            _this.pawnType = (_this.pawnType % 4) + 1;
+        }, 1000);
+        ;
     };
     return Main;
 }());
@@ -451,5 +438,23 @@ function handleClick(coor) {
     var _a = coor.split('-'), x = _a[0], y = _a[1];
     this.main.placePawn(x, y);
 }
-function mikir() {
+function display(x, y) {
+    var cssClass = x + '-' + y;
+    var element = document.getElementById(cssClass);
+    switch (main.pawnType) {
+        case 1:
+            element.classList.add("crown-red");
+            break;
+        case 2:
+            element.classList.add("crown-blue");
+            break;
+        case 3:
+            element.classList.add("helmet-red");
+            break;
+        case 4:
+            element.classList.add("helmet-blue");
+            break;
+        default:
+            break;
+    }
 }
