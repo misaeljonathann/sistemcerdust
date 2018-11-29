@@ -100,7 +100,7 @@ class Board {
         console.log(this.depth);
         
         if (this.isMax) {
-            let valMax = Number.MIN_SAFE_INTEGER;
+            let valMax = Number.MIN_VALUE;
             let coor;
             for (let child of this.child){
                 let nextMove = child.generateChild(alpha, beta);
@@ -116,7 +116,7 @@ class Board {
         } 
 
         else {
-            let valMin = Number.MAX_SAFE_INTEGER;
+            let valMin = Number.MAX_VALUE;
             let coor;
             for (let child of this.child) {
                 let nextMove = child.generateChild(alpha, beta);
@@ -379,18 +379,18 @@ class OthelloV2 {
             [0, 0, 0, 0, 0, 0],
         ];
         this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
+        this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
     }
 
     play(whoseTurn: number) {
         if (whoseTurn == HUMAN) {
-            this.array[i][j] = 
+            // this.array[i][j] = 
+        }
+        if (whoseTurn == BOT) {
         }
     }
 
     constructTree() {
-        if (whoseTurn == BOT) {
-            this.initialConfiguration.generateChild(Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-        }
     }
 }
 

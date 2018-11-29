@@ -70,7 +70,7 @@ var Board = /** @class */ (function () {
         console.log(this.array);
         console.log(this.depth);
         if (this.isMax) {
-            var valMax = Number.MIN_SAFE_INTEGER;
+            var valMax = Number.MIN_VALUE;
             var coor = void 0;
             for (var _i = 0, _a = this.child; _i < _a.length; _i++) {
                 var child = _a[_i];
@@ -86,7 +86,7 @@ var Board = /** @class */ (function () {
             return new UtilityCoor(valMax, coor);
         }
         else {
-            var valMin = Number.MAX_SAFE_INTEGER;
+            var valMin = Number.MAX_VALUE;
             var coor = void 0;
             for (var _b = 0, _c = this.child; _b < _c.length; _b++) {
                 var child = _c[_b];
@@ -382,17 +382,16 @@ var OthelloV2 = /** @class */ (function () {
             [0, 0, 0, 0, 0, 0],
         ];
         this.initialConfiguration = new Board(null, this.array, new pawnType(false, true), 1, true, 1, [null, null]);
+        this.initialConfiguration.generateChild(Number.MAX_VALUE, Number.MIN_VALUE);
     }
     OthelloV2.prototype.play = function (whoseTurn) {
         if (whoseTurn == HUMAN) {
-            this.array[i][j] =
-            ;
+            // this.array[i][j] = 
+        }
+        if (whoseTurn == BOT) {
         }
     };
     OthelloV2.prototype.constructTree = function () {
-        if (whoseTurn == BOT) {
-            this.initialConfiguration.generateChild(Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-        }
     };
     return OthelloV2;
 }());
