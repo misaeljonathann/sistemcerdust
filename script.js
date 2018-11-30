@@ -157,16 +157,21 @@ var Board = /** @class */ (function () {
             if (state_1 === "break")
                 break;
         }
+        console.log("RIGHT =>", whichPin);
         var _loop_3 = function (x) {
             if (this_2.array[x][j] == 0) {
+                console.log('a');
                 turnedPin = [];
                 return "break";
             }
             else if ((this_2.pawn.isEven && this_2.array[x][j] % 2 == 1) || (!this_2.pawn.isEven && this_2.array[x][j] % 2 == 0)) {
+                console.log('b');
                 turnedPin.push([x, j]);
             }
             else {
+                console.log('c');
                 turnedPin.forEach(function (coor) {
+                    console.log('e');
                     //whichPin[this.array[x][j]].push(coor);
                     var jenisBidak = (_this.turn > _this.array[x][j]) ? _this.turn : _this.array[x][j];
                     if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
@@ -215,12 +220,15 @@ var Board = /** @class */ (function () {
             if (state_3 === "break")
                 break;
         }
+        console.log("TOP =>", whichPin);
         var _loop_5 = function (y) {
+            console.log('iterasi bot');
             if (this_4.array[i][y] == 0) {
                 turnedPin = [];
                 return "break";
             }
             else if ((this_4.pawn.isEven && this_4.array[i][y] % 2 == 1) || (!this_4.pawn.isEven && this_4.array[i][y] % 2 == 0)) {
+                console.log('koor ke bawah', i, y);
                 turnedPin.push([i, y]);
             }
             else {
@@ -244,6 +252,7 @@ var Board = /** @class */ (function () {
             if (state_4 === "break")
                 break;
         }
+        console.log("BOTTOM", whichPin);
         var _loop_6 = function (a) {
             if (i + a > 5 || j + a > 5) {
                 turnedPin = [];
@@ -276,6 +285,7 @@ var Board = /** @class */ (function () {
             if (state_5 === "break")
                 break;
         }
+        console.log("BOTTOM RIGHT=> ", whichPin);
         var _loop_7 = function (a) {
             if (i + a > 5 || j - a < 0) {
                 turnedPin = [];
@@ -308,6 +318,7 @@ var Board = /** @class */ (function () {
             if (state_6 === "break")
                 break;
         }
+        console.log("TOP RIGHT => ", whichPin);
         var _loop_8 = function (a) {
             if (i - a < 0 || j - a < 0) {
                 turnedPin = [];
@@ -340,6 +351,7 @@ var Board = /** @class */ (function () {
             if (state_7 === "break")
                 break;
         }
+        console.log("TOP LEFT => ", whichPin);
         var _loop_9 = function (a) {
             if (i - a < 0 || j + a > 5) {
                 turnedPin = [];
@@ -372,6 +384,7 @@ var Board = /** @class */ (function () {
             if (state_8 === "break")
                 break;
         }
+        console.log("BOTTOM LEFT => ", whichPin);
         return whichPin;
     };
     return Board;
@@ -384,20 +397,12 @@ var OthelloV2 = /** @class */ (function () {
         this.boardState = new Board(null, array, turn, true, 1, [null, null]);
         this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
         return this.boardState.candidatePoint.coor;
-        // const array = [
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 1, 2, 0, 0],
-        //     [0, 0, 2, 1, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        // ];
-        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     };
     return OthelloV2;
 }());
 var Main = /** @class */ (function () {
     function Main() {
+        this.userHistory = [];
         this.boardArr = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
@@ -407,7 +412,6 @@ var Main = /** @class */ (function () {
             [0, 0, 0, 0, 0, 0]
         ];
         this.game = new OthelloV2();
-        // this.turnCounter = 1;
         this.pawnType = 1;
         this.isBot = false; // who first?
         // console.log('misael', this.turnCounter);
@@ -429,13 +433,22 @@ var Main = /** @class */ (function () {
                         document.getElementById(i + '-' + j).className = "cell helmet-blue";
                         break;
                     default:
+                        document.getElementById(i + '-' + j).className = "cell";
                         break;
                 }
             }
         }
     };
+    Main.prototype.undoState = function () {
+        this.boardArr = this.userHistory.pop();
+        this.pawnType = this.pawnType == 1 ? 4 : this.pawnType - 1;
+        this.updateDisplay();
+    };
     Main.prototype.placePawn = function (x, y) {
+        var tempState = this.boardArr.map(function (obj) { return (obj.slice()); });
+        this.userHistory.push(tempState);
         this.boardArr[x][y] = this.pawnType;
+        // (parent: Board, array: number[][], turn: number, bool: boolean, depth: number, move: [number, number])
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
@@ -451,11 +464,12 @@ var Main = /** @class */ (function () {
         var _a = this.game.botPlay(this.boardArr, this.pawnType), x = _a[0], y = _a[1];
         this.boardArr[x][y] = this.pawnType;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, true, 1, [null, null]);
+        console.log();
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
         this.game.boardState.array = this.boardArr;
         setTimeout(function () {
-            display(x, y);
+            // display(x, y);
             _this.updateDisplay();
             _this.pawnType = (_this.pawnType % 4) + 1;
         }, 1000);
@@ -490,4 +504,7 @@ function display(x, y) {
         default:
             break;
     }
+}
+function undo() {
+    main.undoState();
 }

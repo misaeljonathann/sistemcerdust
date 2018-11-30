@@ -178,17 +178,22 @@ class Board {
                 break;
             }
         }
+        console.log("RIGHT =>", whichPin);
 
         // check left
         for (let x = i - 1; x >= 0; x--) {
             if (this.array[x][j] == 0) {
+                console.log('a')
                 turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0)) {
+                console.log('b')
                 turnedPin.push([x, j]);
             } else {
+                console.log('c')
                 turnedPin.forEach(coor => {
+                    console.log('e')
                     //whichPin[this.array[x][j]].push(coor);
                     let jenisBidak = (this.turn > this.array[x][j]) ? this.turn : this.array[x][j];
                     if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
@@ -221,13 +226,16 @@ class Board {
                 break;
             }
         }
+        console.log("TOP =>", whichPin);
         // check bottom
         for (let y = j + 1; y < 6; y++) {
+            console.log('iterasi bot');
             if (this.array[i][y] == 0) {
                 turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
+                console.log('koor ke bawah',i,y);
                 turnedPin.push([i, y]);
             } else {
                 turnedPin.forEach(coor => {
@@ -242,9 +250,9 @@ class Board {
                 break;
             }
         }
-
+        console.log("BOTTOM", whichPin);
         //check bot right
-        for (let a = 1; a <= 5 - i; a++) {
+        for (let a = 1; a <= 5-i; a++) {
             if (i + a > 5 || j + a > 5) {
                 turnedPin = [];
                 break;
@@ -267,9 +275,11 @@ class Board {
                 break;
             }
         }
+        console.log("BOTTOM RIGHT=> ",whichPin);
+
 
         //check top right
-        for (let a = 1; a <= 5 - i; a++) {
+        for (let a = 1; a <= 5-i; a++) {
             if (i + a > 5 || j - a < 0) {
                 turnedPin = [];
                 break;
@@ -293,6 +303,7 @@ class Board {
                 break;
             }
         }
+        console.log("TOP RIGHT => ",whichPin);
 
         //check top left
         for (let a = 1; a <= i; a++) {
@@ -318,6 +329,7 @@ class Board {
                 break;
             }
         }
+        console.log("TOP LEFT => ",whichPin);
         //check bottom left
         for (let a = 1; a <= i; a++) {
             if (i - a < 0 || j + a > 5) {
@@ -343,6 +355,8 @@ class Board {
                 break;
             }
         }
+        console.log("BOTTOM LEFT => ",whichPin);
+
         return whichPin;
     }
 }
@@ -352,19 +366,9 @@ class OthelloV2 {
 
     // main class : ubah array, ubah turn.
     botPlay(array: number[][], turn: number) {
-        this.boardState = new Board(null, array, turn, true, 1, [null, null])
+        this.boardState = new Board(null, array, turn, true, 1, [null, null]);
         this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
         return this.boardState.candidatePoint.coor;
-        // const array = [
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 1, 2, 0, 0],
-        //     [0, 0, 2, 1, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        //     [0, 0, 0, 0, 0, 0],
-        // ];
-
-        // this.initialConfiguration = new Board(null, array, 1, true, 1, [null, null]);
     }
 }
 
@@ -373,6 +377,7 @@ class Main {
     pawnType: number;
     boardArr: number[][];
     isBot: boolean;
+    userHistory = [];
 
     constructor() {
         this.boardArr = [
@@ -384,7 +389,6 @@ class Main {
             [0, 0, 0, 0, 0, 0]
         ]
         this.game = new OthelloV2();
-        // this.turnCounter = 1;
         this.pawnType = 1;
         this.isBot = false; // who first?
         // console.log('misael', this.turnCounter);
@@ -407,14 +411,24 @@ class Main {
                         document.getElementById(i+'-'+j).className = "cell helmet-blue";
                         break;
                     default:
+                        document.getElementById(i+'-'+j).className = "cell";
                         break;
                 }
             }
         }
     }
 
+    undoState() {
+        this.boardArr = this.userHistory.pop();
+        this.pawnType =  this.pawnType == 1 ? 4 : this.pawnType-1;
+        this.updateDisplay();
+    }
+
     placePawn(x: number, y: number) {
+        var tempState = this.boardArr.map(obj => ([...obj]));
+        this.userHistory.push(tempState);
         this.boardArr[x][y] = this.pawnType;
+        // (parent: Board, array: number[][], turn: number, bool: boolean, depth: number, move: [number, number])
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
         const turnedPin = this.game.boardState.totalTurnedPin(x,y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
@@ -431,17 +445,17 @@ class Main {
         const [x, y] = this.game.botPlay(this.boardArr, this.pawnType);
         this.boardArr[x][y] = this.pawnType;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, true, 1, [null, null]);
+        console.log()
         const turnedPin = this.game.boardState.totalTurnedPin(x,y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
         this.game.boardState.array = this.boardArr;
         setTimeout(() => {
-            display(x, y);
+            // display(x, y);
             this.updateDisplay();
             this.pawnType = (this.pawnType % 4) + 1;
         }, 1000);
         console.log("BOT ", this.boardArr);
     }
-
 }
 
 const main = new Main();
@@ -473,4 +487,7 @@ function display(x, y) {
         default:
             break;
     }
+}
+function undo() {
+    main.undoState();
 }
