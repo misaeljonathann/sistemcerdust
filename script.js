@@ -52,7 +52,7 @@ var Board = /** @class */ (function () {
         this.child.push(newChild);
     };
     Board.prototype.generateChild = function (alpha, beta) {
-        if (this.depth == 5) {
+        if (this.depth == 8) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
         for (var i = 0; i < 6; i++) {
@@ -157,21 +157,16 @@ var Board = /** @class */ (function () {
             if (state_1 === "break")
                 break;
         }
-        console.log("RIGHT =>", whichPin);
         var _loop_3 = function (x) {
             if (this_2.array[x][j] == 0) {
-                console.log('a');
                 turnedPin = [];
                 return "break";
             }
             else if ((this_2.pawn.isEven && this_2.array[x][j] % 2 == 1) || (!this_2.pawn.isEven && this_2.array[x][j] % 2 == 0)) {
-                console.log('b');
                 turnedPin.push([x, j]);
             }
             else {
-                console.log('c');
                 turnedPin.forEach(function (coor) {
-                    console.log('e');
                     //whichPin[this.array[x][j]].push(coor);
                     var jenisBidak = (_this.turn > _this.array[x][j]) ? _this.turn : _this.array[x][j];
                     if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
@@ -220,15 +215,12 @@ var Board = /** @class */ (function () {
             if (state_3 === "break")
                 break;
         }
-        console.log("TOP =>", whichPin);
         var _loop_5 = function (y) {
-            console.log('iterasi bot');
             if (this_4.array[i][y] == 0) {
                 turnedPin = [];
                 return "break";
             }
             else if ((this_4.pawn.isEven && this_4.array[i][y] % 2 == 1) || (!this_4.pawn.isEven && this_4.array[i][y] % 2 == 0)) {
-                console.log('koor ke bawah', i, y);
                 turnedPin.push([i, y]);
             }
             else {
@@ -252,7 +244,6 @@ var Board = /** @class */ (function () {
             if (state_4 === "break")
                 break;
         }
-        console.log("BOTTOM", whichPin);
         var _loop_6 = function (a) {
             if (i + a > 5 || j + a > 5) {
                 turnedPin = [];
@@ -285,7 +276,6 @@ var Board = /** @class */ (function () {
             if (state_5 === "break")
                 break;
         }
-        console.log("BOTTOM RIGHT=> ", whichPin);
         var _loop_7 = function (a) {
             if (i + a > 5 || j - a < 0) {
                 turnedPin = [];
@@ -318,7 +308,6 @@ var Board = /** @class */ (function () {
             if (state_6 === "break")
                 break;
         }
-        console.log("TOP RIGHT => ", whichPin);
         var _loop_8 = function (a) {
             if (i - a < 0 || j - a < 0) {
                 turnedPin = [];
@@ -351,7 +340,6 @@ var Board = /** @class */ (function () {
             if (state_7 === "break")
                 break;
         }
-        console.log("TOP LEFT => ", whichPin);
         var _loop_9 = function (a) {
             if (i - a < 0 || j + a > 5) {
                 turnedPin = [];
@@ -384,7 +372,6 @@ var Board = /** @class */ (function () {
             if (state_8 === "break")
                 break;
         }
-        console.log("BOTTOM LEFT => ", whichPin);
         return whichPin;
     };
     return Board;

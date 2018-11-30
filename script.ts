@@ -78,7 +78,7 @@ class Board {
 
     generateChild(alpha: number, beta: number) {
 
-        if (this.depth == 5) {
+        if (this.depth == 8) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
 
@@ -178,22 +178,17 @@ class Board {
                 break;
             }
         }
-        console.log("RIGHT =>", whichPin);
 
         // check left
         for (let x = i - 1; x >= 0; x--) {
             if (this.array[x][j] == 0) {
-                console.log('a')
                 turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[x][j] % 2 == 1) || (!this.pawn.isEven && this.array[x][j] % 2 == 0)) {
-                console.log('b')
                 turnedPin.push([x, j]);
             } else {
-                console.log('c')
                 turnedPin.forEach(coor => {
-                    console.log('e')
                     //whichPin[this.array[x][j]].push(coor);
                     let jenisBidak = (this.turn > this.array[x][j]) ? this.turn : this.array[x][j];
                     if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
@@ -226,16 +221,13 @@ class Board {
                 break;
             }
         }
-        console.log("TOP =>", whichPin);
         // check bottom
         for (let y = j + 1; y < 6; y++) {
-            console.log('iterasi bot');
             if (this.array[i][y] == 0) {
                 turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
-                console.log('koor ke bawah',i,y);
                 turnedPin.push([i, y]);
             } else {
                 turnedPin.forEach(coor => {
@@ -250,7 +242,6 @@ class Board {
                 break;
             }
         }
-        console.log("BOTTOM", whichPin);
         //check bot right
         for (let a = 1; a <= 5-i; a++) {
             if (i + a > 5 || j + a > 5) {
@@ -275,7 +266,6 @@ class Board {
                 break;
             }
         }
-        console.log("BOTTOM RIGHT=> ",whichPin);
 
 
         //check top right
@@ -303,7 +293,6 @@ class Board {
                 break;
             }
         }
-        console.log("TOP RIGHT => ",whichPin);
 
         //check top left
         for (let a = 1; a <= i; a++) {
@@ -329,7 +318,6 @@ class Board {
                 break;
             }
         }
-        console.log("TOP LEFT => ",whichPin);
         //check bottom left
         for (let a = 1; a <= i; a++) {
             if (i - a < 0 || j + a > 5) {
@@ -355,7 +343,6 @@ class Board {
                 break;
             }
         }
-        console.log("BOTTOM LEFT => ",whichPin);
 
         return whichPin;
     }
