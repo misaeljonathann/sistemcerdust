@@ -149,13 +149,15 @@ class Board {
         return newArray;
     }
 
+    
+
     // this function return array of location turned pin [[x,y],....]
     totalTurnedPin(i: number, j: number): { [pawn: number]: number[][] } {
         var turnedPin: number[][] = [];
         var whichPin: { [pawn: number]: number[][]; } = {};
 
         // check right 
-        for (var x = i + 1; x < 6; x++) {
+        for (let x = i + 1; x < 6; x++) {
             if (this.array[x][j] == 0) {
                 turnedPin = [];
                 break;
@@ -181,7 +183,7 @@ class Board {
         }
 
         // check left
-        for (var x = i - 1; x > 0; x--) {
+        for (let x = i - 1; x > 0; x--) {
             if (this.array[x][j] == 0) {
                 turnedPin = [];
                 break;
@@ -204,9 +206,10 @@ class Board {
                 break;
             }
         }
-
+        console.log(j);
         // check top 
-        for (var y = j - 1; y > 0; y--) {
+        for (let y = j - 1; y > 0; y--) {
+            console.log(j);
             if (this.array[i][y] == 0) {
                 turnedPin = [];
                 break;
@@ -229,15 +232,17 @@ class Board {
                 break;
             }
         }
-
         // check bottom
-        for (var y = j + 1; y < 6; y++) {
+        console.log( j,  j+1);
+        for (let y = j + 1; y < 6; y++) {
+            console.log(y);
             if (this.array[i][y] == 0) {
                 turnedPin = [];
                 break;
             }
             else if ((this.pawn.isEven && this.array[i][y] % 2 == 1) || (!this.pawn.isEven && this.array[i][y] % 2 == 0)) {
                 turnedPin.push([i, y]);
+                console.log(i,y);
             } else {
                 turnedPin.forEach(coor => {
                     //whichPin[this.array[x][j]].push(coor);
@@ -388,9 +393,37 @@ class Main {
         // console.log('misael', this.turnCounter);
     }
 
+    updateDisplay() {
+        for (let i = 0; i < 6 ; i++ ){
+            for (let j = 0 ; j < 6; j++) {
+                switch (this.boardArr[i][j]) {
+                    case 1:
+                        document.getElementById(i+'-'+j).className = "cell crown-red";
+                        break;
+                    case 2:
+                        document.getElementById(i+'-'+j).className = "cell crown-blue";
+                        break;
+                    case 3:
+                        document.getElementById(i+'-'+j).className = "cell helmet-red";
+                        break;
+                    case 4:
+                        document.getElementById(i+'-'+j).className = "cell helmet-blue";
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     placePawn(x: number, y: number) {
         this.boardArr[x][y] = this.pawnType;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
+        const turnedPin = this.game.boardState.totalTurnedPin(x,y);
+        this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
+        this.updateDisplay();
+        console.log('HHHO', this.boardArr);
+        console.log('total Turned PIn ', this.game.boardState.totalTurnedPin(x,y));
         console.log("xy : ", x, y);
 
         display(x, y);
@@ -402,9 +435,12 @@ class Main {
         const [x, y] = this.game.botPlay(this.boardArr, this.pawnType);
         this.boardArr[x][y] = this.pawnType;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, true, 1, [null, null]);
+        const turnedPin = this.game.boardState.totalTurnedPin(x,y);
+        this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
         console.log("xy : ", x, y);
         setTimeout(() => {
             display(x, y);
+            this.updateDisplay();
             this.pawnType = (this.pawnType % 4) + 1;
         }, 1000);;
     }
@@ -414,7 +450,9 @@ const main = new Main();
 console.log('giliran sokap :', this.main.isBot ? 'Bot' : 'Human');
 
 function handleClick(coor) {
-    const [x, y] = coor.split('-');
+    var [x, y] = coor.split('-');
+    x = parseInt(x);
+    y = parseInt(y);
     this.main.placePawn(x, y);
 }
 
