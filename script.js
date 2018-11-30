@@ -68,7 +68,7 @@ var Board = /** @class */ (function () {
                 }
             }
         }
-        console.log(this.array);
+        console.log("asdas", this.array);
         console.log(this.depth);
         if (this.isMax) {
             var valMax = -1000000;
@@ -161,16 +161,22 @@ var Board = /** @class */ (function () {
             if (state_1 === "break")
                 break;
         }
+        console.log("RIGHT =>", whichPin);
         var _loop_3 = function (x) {
+            console.log('iterasi di left', x, j);
             if (this_2.array[x][j] == 0) {
+                console.log('a');
                 turnedPin = [];
                 return "break";
             }
             else if ((this_2.pawn.isEven && this_2.array[x][j] % 2 == 1) || (!this_2.pawn.isEven && this_2.array[x][j] % 2 == 0)) {
+                console.log('b');
                 turnedPin.push([x, j]);
             }
             else {
+                console.log('c');
                 turnedPin.forEach(function (coor) {
+                    console.log('e');
                     //whichPin[this.array[x][j]].push(coor);
                     if (!(_this.array[x][j] in whichPin) && (whichPin[_this.array[x][j]] = [])) { //if not exists
                         if (_this.turn > _this.array[x][j] || _this.turn < _this.array[x][j]) {
@@ -194,9 +200,8 @@ var Board = /** @class */ (function () {
             if (state_2 === "break")
                 break;
         }
-        console.log(j);
+        console.log("LEFT =>", whichPin);
         var _loop_4 = function (y) {
-            console.log(j);
             if (this_3.array[i][y] == 0) {
                 turnedPin = [];
                 return "break";
@@ -229,17 +234,16 @@ var Board = /** @class */ (function () {
             if (state_3 === "break")
                 break;
         }
-        // check bottom
-        console.log(j, j + 1);
+        console.log("TOP =>", whichPin);
         var _loop_5 = function (y) {
-            console.log(y);
+            console.log('iterasi bot');
             if (this_4.array[i][y] == 0) {
                 turnedPin = [];
                 return "break";
             }
             else if ((this_4.pawn.isEven && this_4.array[i][y] % 2 == 1) || (!this_4.pawn.isEven && this_4.array[i][y] % 2 == 0)) {
+                console.log('koor ke bawah', i, y);
                 turnedPin.push([i, y]);
-                console.log(i, y);
             }
             else {
                 turnedPin.forEach(function (coor) {
@@ -260,11 +264,13 @@ var Board = /** @class */ (function () {
             }
         };
         var this_4 = this;
+        // check bottom
         for (var y = j + 1; y < 6; y++) {
             var state_4 = _loop_5(y);
             if (state_4 === "break")
                 break;
         }
+        console.log("BOTTOM", whichPin);
         var _loop_6 = function (a) {
             if (i + a > 5 || j + a > 5) {
                 return "break";
@@ -296,6 +302,7 @@ var Board = /** @class */ (function () {
             if (state_5 === "break")
                 break;
         }
+        console.log("BOTTOM RIGHT=> ", whichPin);
         var _loop_7 = function (a) {
             if (i + a > 5 || j - a < 0) {
                 return "break";
@@ -327,6 +334,7 @@ var Board = /** @class */ (function () {
             if (state_6 === "break")
                 break;
         }
+        console.log("TOP RIGHT => ", whichPin);
         var _loop_8 = function (a) {
             if (i - a < 0 || j - a < 0) {
                 return "break";
@@ -353,11 +361,12 @@ var Board = /** @class */ (function () {
         };
         var this_7 = this;
         //check top left
-        for (var a = 1; a <= 5 - i; a++) {
+        for (var a = 1; a <= i; a++) {
             var state_7 = _loop_8(a);
             if (state_7 === "break")
                 break;
         }
+        console.log("TOP LEFT => ", whichPin);
         var _loop_9 = function (a) {
             if (i - a < 0 || j + a > 5) {
                 return "break";
@@ -384,11 +393,12 @@ var Board = /** @class */ (function () {
         };
         var this_8 = this;
         //check bottom left
-        for (var a = 1; a <= 5 - i; a++) {
+        for (var a = 1; a <= i; a++) {
             var state_8 = _loop_9(a);
             if (state_8 === "break")
                 break;
         }
+        console.log("BOTTOM LEFT => ", whichPin);
         return whichPin;
     };
     return Board;
@@ -407,7 +417,11 @@ var OthelloV2 = /** @class */ (function () {
 }());
 var Main = /** @class */ (function () {
     function Main() {
+<<<<<<< HEAD
         this.possibleMove = [];
+=======
+        this.userHistory = [];
+>>>>>>> undo feature
         this.boardArr = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
@@ -438,34 +452,42 @@ var Main = /** @class */ (function () {
                         document.getElementById(i + '-' + j).className = "cell helmet-blue";
                         break;
                     default:
+                        document.getElementById(i + '-' + j).className = "cell";
                         break;
                 }
             }
         }
     };
+    Main.prototype.undoState = function () {
+        this.boardArr = this.userHistory.pop();
+        this.pawnType = this.pawnType == 1 ? 4 : this.pawnType - 1;
+        this.updateDisplay();
+    };
     Main.prototype.placePawn = function (x, y) {
+        var tempState = this.boardArr.map(function (obj) { return (obj.slice()); });
+        this.userHistory.push(tempState);
         this.boardArr[x][y] = this.pawnType;
+        // (parent: Board, array: number[][], turn: number, bool: boolean, depth: number, move: [number, number])
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
+        console.log("TOD ===> ", this.pawnType, this.game.boardState.array);
         this.updateDisplay();
-        console.log('HHHO', this.boardArr);
-        console.log('total Turned PIn ', this.game.boardState.totalTurnedPin(x, y));
-        console.log("xy : ", x, y);
-        display(x, y);
+        // display(x, y);
         this.pawnType = (this.pawnType % 4) + 1;
-        this.botTurn();
+        // this.botTurn();
     };
     Main.prototype.botTurn = function () {
         var _this = this;
         var _a = this.game.botPlay(this.boardArr, this.pawnType), x = _a[0], y = _a[1];
         this.boardArr[x][y] = this.pawnType;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, true, 1, [null, null]);
+        console.log();
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
         console.log("xy : ", x, y);
         setTimeout(function () {
-            display(x, y);
+            // display(x, y);
             _this.updateDisplay();
             _this.pawnType = (_this.pawnType % 4) + 1;
         }, 1000);
@@ -500,4 +522,7 @@ function display(x, y) {
         default:
             break;
     }
+}
+function undo() {
+    main.undoState();
 }
