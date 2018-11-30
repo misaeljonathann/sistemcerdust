@@ -52,7 +52,7 @@ var Board = /** @class */ (function () {
         this.child.push(newChild);
     };
     Board.prototype.generateChild = function (alpha, beta) {
-        if (this.depth == 3) {
+        if (this.depth == 5) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
         for (var i = 0; i < 6; i++) {

@@ -78,7 +78,7 @@ class Board {
 
     generateChild(alpha: number, beta: number) {
 
-        if (this.depth == 3) {
+        if (this.depth == 5) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
 
