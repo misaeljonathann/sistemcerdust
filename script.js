@@ -53,7 +53,6 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.generateChild = function (alpha, beta) {
         if (this.depth == 3) {
-            console.log("LEAF : ", this.move);
             return new UtilityCoor(this.utilityPoint, this.move);
         }
         for (var i = 0; i < 6; i++) {
@@ -68,8 +67,6 @@ var Board = /** @class */ (function () {
                 }
             }
         }
-        console.log(this.array);
-        console.log(this.depth);
         if (this.isMax) {
             var valMax = -1000000;
             var coor = void 0;
@@ -80,7 +77,6 @@ var Board = /** @class */ (function () {
                 if (nextMove.point > valMax) {
                     valMax = nextMove.point;
                     coor = child.move;
-                    console.log("duar2 ", coor);
                     if (valMax >= beta)
                         return new UtilityCoor(valMax, child.move);
                     alpha = Math.max(alpha, valMax);
@@ -97,7 +93,6 @@ var Board = /** @class */ (function () {
                 if (nextMove.point < valMin) {
                     valMin = nextMove.point;
                     coor = child.move;
-                    console.log("duar ", coor);
                     if (valMin <= beta)
                         return new UtilityCoor(valMin, child.move);
                     beta = Math.min(beta, valMin);
@@ -105,14 +100,6 @@ var Board = /** @class */ (function () {
             }
             return new UtilityCoor(valMin, coor);
         }
-        // if (counter >= 15) {
-        //     return 0;
-        // }
-        // console.log(this.utilityPoint);
-        // console.log(this.array);
-        // this.child.forEach(path => {
-        //     path.generateChild();
-        // });
     };
     Board.prototype.generateTurnedArray = function (paths) {
         var newArray = this.array.map(function (arr) {
@@ -121,8 +108,12 @@ var Board = /** @class */ (function () {
         var _loop_1 = function (key) {
             var value = paths[key];
             value.forEach(function (path) {
+                // if(!this.isMax && this.turn == 3){
+                //     console.log("change ", path, " with => ", key);
+                // }
                 newArray[path[0]][path[1]] = parseInt(key, 10);
             });
+            console.log("---------");
         };
         //key : 1, 2, 3, 4
         //value : [[x,y], [i,j]]
@@ -136,6 +127,7 @@ var Board = /** @class */ (function () {
         var _this = this;
         var turnedPin = [];
         var whichPin = {};
+        var dummyTurnedPin = [];
         var _loop_2 = function (x) {
             if (this_1.array[x][j] == 0) {
                 turnedPin = [];
@@ -147,17 +139,12 @@ var Board = /** @class */ (function () {
             else {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor)
-                    if (!(_this.array[x][j] in whichPin) && (whichPin[_this.array[x][j]] = [])) { //if not exists
-                        if (_this.turn > _this.array[x][j] || _this.turn < _this.array[x][j]) {
-                            whichPin[_this.turn] = [coor];
-                        }
-                        else {
-                            whichPin[_this.array[x][j]] = [coor];
-                        }
+                    var jenisBidak = (_this.turn > _this.array[x][j]) ? _this.turn : _this.array[x][j];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
+                        whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        console.log("turn : ", _this.turn);
-                        whichPin[_this.array[x][j]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -181,16 +168,12 @@ var Board = /** @class */ (function () {
             else {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
-                    if (!(_this.array[x][j] in whichPin) && (whichPin[_this.array[x][j]] = [])) { //if not exists
-                        if (_this.turn > _this.array[x][j] || _this.turn < _this.array[x][j]) {
-                            whichPin[_this.turn] = [coor];
-                        }
-                        else {
-                            whichPin[_this.array[x][j]] = [coor];
-                        }
+                    var jenisBidak = (_this.turn > _this.array[x][j]) ? _this.turn : _this.array[x][j];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
+                        whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[x][j]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -198,14 +181,12 @@ var Board = /** @class */ (function () {
         };
         var this_2 = this;
         // check left
-        for (var x = i - 1; x > 0; x--) {
+        for (var x = i - 1; x >= 0; x--) {
             var state_2 = _loop_3(x);
             if (state_2 === "break")
                 break;
         }
-        console.log(j);
         var _loop_4 = function (y) {
-            console.log(j);
             if (this_3.array[i][y] == 0) {
                 turnedPin = [];
                 return "break";
@@ -216,16 +197,12 @@ var Board = /** @class */ (function () {
             else {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
-                    if (!(_this.array[i][y] in whichPin) && (whichPin[_this.array[i][y]] = [])) { //if not exists
-                        if (_this.turn > _this.array[i][y] || _this.turn < _this.array[i][y]) {
-                            whichPin[_this.turn] = [coor];
-                        }
-                        else {
-                            whichPin[_this.array[i][y]] = [coor];
-                        }
+                    var jenisBidak = (_this.turn > _this.array[i][y]) ? _this.turn : _this.array[i][y];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
+                        whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[i][y]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -233,42 +210,35 @@ var Board = /** @class */ (function () {
         };
         var this_3 = this;
         // check top 
-        for (var y = j - 1; y > 0; y--) {
+        for (var y = j - 1; y >= 0; y--) {
             var state_3 = _loop_4(y);
             if (state_3 === "break")
                 break;
         }
-        // check bottom
-        console.log(j, j + 1);
         var _loop_5 = function (y) {
-            console.log(y);
             if (this_4.array[i][y] == 0) {
                 turnedPin = [];
                 return "break";
             }
             else if ((this_4.pawn.isEven && this_4.array[i][y] % 2 == 1) || (!this_4.pawn.isEven && this_4.array[i][y] % 2 == 0)) {
                 turnedPin.push([i, y]);
-                console.log(i, y);
             }
             else {
                 turnedPin.forEach(function (coor) {
                     //whichPin[this.array[x][j]].push(coor);
-                    if (!(_this.array[i][y] in whichPin) && (whichPin[_this.array[i][y]] = [])) { //if not exists
-                        if (_this.turn > _this.array[i][y] || _this.turn < _this.array[i][y]) {
-                            whichPin[_this.turn] = [coor];
-                        }
-                        else {
-                            whichPin[_this.array[i][y]] = [coor];
-                        }
+                    var jenisBidak = (_this.turn > _this.array[i][y]) ? _this.turn : _this.array[i][y];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
+                        whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[i][y]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
             }
         };
         var this_4 = this;
+        // check bottom
         for (var y = j + 1; y < 6; y++) {
             var state_4 = _loop_5(y);
             if (state_4 === "break")
@@ -276,6 +246,7 @@ var Board = /** @class */ (function () {
         }
         var _loop_6 = function (a) {
             if (i + a > 5 || j + a > 5) {
+                turnedPin = [];
                 return "break";
             }
             if (this_5.array[i + a][j + a] == 0) {
@@ -287,12 +258,12 @@ var Board = /** @class */ (function () {
             }
             else {
                 turnedPin.forEach(function (coor) {
-                    if (!(_this.array[i + a][j + a] in whichPin) && (whichPin[_this.array[i + a][j + a]] = [])) { //if not exists
-                        var jenisBidak = (_this.turn > _this.array[i + a][j + a]) ? _this.turn : _this.array[i + a][j + a];
+                    var jenisBidak = (_this.turn > _this.array[i + a][j + a]) ? _this.turn : _this.array[i + a][j + a];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
                         whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[i + a][j + a]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -307,6 +278,7 @@ var Board = /** @class */ (function () {
         }
         var _loop_7 = function (a) {
             if (i + a > 5 || j - a < 0) {
+                turnedPin = [];
                 return "break";
             }
             if (this_6.array[i + a][j - a] == 0) {
@@ -318,12 +290,12 @@ var Board = /** @class */ (function () {
             }
             else {
                 turnedPin.forEach(function (coor) {
-                    if (!(_this.array[i + a][j - a] in whichPin) && (whichPin[_this.array[i + a][j - a]] = [])) { //if not exists
-                        var jenisBidak = (_this.turn > _this.array[i + a][j - a]) ? _this.turn : _this.array[i + a][j - a];
+                    var jenisBidak = (_this.turn > _this.array[i + a][j - a]) ? _this.turn : _this.array[i + a][j - a];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
                         whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[i + a][j - a]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -338,6 +310,7 @@ var Board = /** @class */ (function () {
         }
         var _loop_8 = function (a) {
             if (i - a < 0 || j - a < 0) {
+                turnedPin = [];
                 return "break";
             }
             if (this_7.array[i - a][j - a] == 0) {
@@ -349,12 +322,12 @@ var Board = /** @class */ (function () {
             }
             else {
                 turnedPin.forEach(function (coor) {
-                    if (!(_this.array[i - a][j - a] in whichPin) && (whichPin[_this.array[i - a][j - a]] = [])) { //if not exists
-                        var jenisBidak = (_this.turn > _this.array[i - a][j - a]) ? _this.turn : _this.array[i - a][j - a];
+                    var jenisBidak = (_this.turn > _this.array[i - a][j - a]) ? _this.turn : _this.array[i - a][j - a];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
                         whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[i - a][j - a]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -362,13 +335,14 @@ var Board = /** @class */ (function () {
         };
         var this_7 = this;
         //check top left
-        for (var a = 1; a <= 5 - i; a++) {
+        for (var a = 1; a <= i; a++) {
             var state_7 = _loop_8(a);
             if (state_7 === "break")
                 break;
         }
         var _loop_9 = function (a) {
             if (i - a < 0 || j + a > 5) {
+                turnedPin = [];
                 return "break";
             }
             if (this_8.array[i - a][j + a] == 0) {
@@ -380,12 +354,12 @@ var Board = /** @class */ (function () {
             }
             else {
                 turnedPin.forEach(function (coor) {
-                    if (!(_this.array[i - a][j + a] in whichPin) && (whichPin[_this.array[i - a][j + a]] = [])) { //if not exists
-                        var jenisBidak = (_this.turn > _this.array[i - a][j + a]) ? _this.turn : _this.array[i - a][j + a];
+                    var jenisBidak = (_this.turn > _this.array[i - a][j + a]) ? _this.turn : _this.array[i - a][j + a];
+                    if (!(jenisBidak in whichPin) && (whichPin[jenisBidak] = [])) { //if not exists
                         whichPin[jenisBidak] = [coor];
                     }
                     else {
-                        whichPin[_this.array[i - a][j + a]].push(coor);
+                        whichPin[jenisBidak].push(coor);
                     }
                 });
                 return "break";
@@ -393,7 +367,7 @@ var Board = /** @class */ (function () {
         };
         var this_8 = this;
         //check bottom left
-        for (var a = 1; a <= 5 - i; a++) {
+        for (var a = 1; a <= i; a++) {
             var state_8 = _loop_9(a);
             if (state_8 === "break")
                 break;
@@ -409,7 +383,6 @@ var OthelloV2 = /** @class */ (function () {
     OthelloV2.prototype.botPlay = function (array, turn) {
         this.boardState = new Board(null, array, turn, true, 1, [null, null]);
         this.boardState.candidatePoint = this.boardState.generateChild(-100000000, 100000000);
-        console.log(this.boardState.candidatePoint);
         return this.boardState.candidatePoint.coor;
         // const array = [
         //     [0, 0, 0, 0, 0, 0],
@@ -466,12 +439,11 @@ var Main = /** @class */ (function () {
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
+        this.game.boardState.array = this.boardArr;
         this.updateDisplay();
-        console.log('HHHO', this.boardArr);
-        console.log('total Turned PIn ', this.game.boardState.totalTurnedPin(x, y));
-        console.log("xy : ", x, y);
         display(x, y);
         this.pawnType = (this.pawnType % 4) + 1;
+        console.log("HUMAN ", this.boardArr);
         this.botTurn();
     };
     Main.prototype.botTurn = function () {
@@ -481,13 +453,13 @@ var Main = /** @class */ (function () {
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, true, 1, [null, null]);
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         this.boardArr = this.game.boardState.generateTurnedArray(turnedPin);
-        console.log("xy : ", x, y);
+        this.game.boardState.array = this.boardArr;
         setTimeout(function () {
             display(x, y);
             _this.updateDisplay();
             _this.pawnType = (_this.pawnType % 4) + 1;
         }, 1000);
-        ;
+        console.log("BOT ", this.boardArr);
     };
     return Main;
 }());
