@@ -28,6 +28,8 @@ var Board = /** @class */ (function () {
         this.pawn = pawnClass[turn];
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array)[0] - this.utilityFunction(array)[1];
+        if (userTurn == "second")
+            this.utilityPoint = -this.utilityPoint;
         this.isMax = bool;
         this.depth = depth;
         this.move = move;
@@ -58,7 +60,14 @@ var Board = /** @class */ (function () {
         this.child.push(newChild);
     };
     Board.prototype.generateChild = function (alpha, beta) {
-        if (this.depth == 8) {
+        var depth_treshold = 0;
+        if (difficulty == "easy")
+            depth_treshold = 5;
+        if (difficulty == "medium")
+            depth_treshold = 8;
+        if (difficulty == "hard")
+            depth_treshold = 11;
+        if (this.depth == depth_treshold) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
         for (var i = 0; i < 6; i++) {
@@ -437,10 +446,15 @@ var Main = /** @class */ (function () {
         }
     };
     Main.prototype.undoState = function () {
-        this.boardArr = this.userHistory.pop();
-        this.pawnType = this.pawnType == 1 ? 3 : this.pawnType - 2;
-        console.log("tot", this.pawnType);
-        this.updateDisplay();
+        if (gameStarted && this.userHistory.length != 0) {
+            this.boardArr = this.userHistory.pop();
+            var score = this.game.boardState.utilityFunction(this.boardArr);
+            this.updateScore(score);
+            console.log('tebak score', score);
+            this.pawnType = this.pawnType == 1 ? 3 : this.pawnType - 2;
+            console.log("tot", this.pawnType);
+            this.updateDisplay();
+        }
     };
     // kiri score bot, kanan score user
     Main.prototype.updateScore = function (bothScore) {
@@ -470,11 +484,12 @@ var Main = /** @class */ (function () {
                 alert('Yeay user win! Congratulations!');
             }
             else {
-                alert('Whoopsie! You lose this time! Be happy!');
+                alert('Whoopsie! You lose this time! Try again next time!');
             }
         }
     };
     Main.prototype.placePawn = function (x, y) {
+        gameStarted = true;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
         var turnedPin = this.game.boardState.totalTurnedPin(x, y);
         if (Object.keys(turnedPin).length > 0) {
@@ -512,12 +527,19 @@ var Main = /** @class */ (function () {
     return Main;
 }());
 var main = new Main();
+var gameStarted = false;
 console.log('giliran sokap :', this.main.isBot ? 'Bot' : 'Human');
 function handleClick(coor) {
     var _a = coor.split('-'), x = _a[0], y = _a[1];
     x = parseInt(x);
     y = parseInt(y);
-    this.main.placePawn(x, y);
+    if (gameStarted &&
+        !document.getElementById(coor).classList.contains('crown-red') &&
+        !document.getElementById(coor).classList.contains('crown-blue') &&
+        !document.getElementById(coor).classList.contains('helmet-red') &&
+        !document.getElementById(coor).classList.contains('helmet-blue')) {
+        this.main.placePawn(x, y);
+    }
 }
 function display(x, y) {
     var cssClass = x + '-' + y;
@@ -541,4 +563,27 @@ function display(x, y) {
 }
 function undo() {
     main.undoState();
+}
+var userTurn = "";
+var difficulty = "";
+function initGame() {
+    var difficulties = document.getElementsByName("bot_difficulty");
+    var userTurnsElement = document.getElementsByName("user_turn");
+    gameStarted = true;
+    document.getElementById("gameStatus").innerHTML = "Game started ! Goodluck !";
+    for (var i = 0, length = userTurnsElement.length; i < length; i++) {
+        if (userTurnsElement[i].checked) {
+            userTurn = userTurnsElement[i].value;
+            break;
+        }
+    }
+    for (var i = 0, length = difficulties.length; i < length; i++) {
+        if (difficulties[i].checked) {
+            difficulty = difficulties[i].value;
+            break;
+        }
+    }
+    if (userTurn == "second") {
+        this.main.botTurn();
+    }
 }

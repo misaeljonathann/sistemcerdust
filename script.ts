@@ -50,6 +50,7 @@ class Board {
         this.pawn = pawnClass[turn];
         this.turn = turn;
         this.utilityPoint = this.utilityFunction(array)[0] - this.utilityFunction(array)[1];
+        if (userTurn == "second") this.utilityPoint = -this.utilityPoint;
         this.isMax = bool;
         this.depth = depth;
         this.move = move;
@@ -82,8 +83,11 @@ class Board {
     }
 
     generateChild(alpha: number, beta: number) {
-
-        if (this.depth == 8) {
+        var depth_treshold = 0;
+        if (difficulty == "easy") depth_treshold = 5;
+        if (difficulty == "medium") depth_treshold = 8;
+        if (difficulty == "hard") depth_treshold = 11;
+        if (this.depth == depth_treshold) {
             return new UtilityCoor(this.utilityPoint, this.move);
         }
 
@@ -415,10 +419,15 @@ class Main {
     }
 
     undoState() {
-        this.boardArr = this.userHistory.pop();
-        this.pawnType =  this.pawnType == 1 ? 3 : this.pawnType-2;
-        console.log("tot",this.pawnType);
-        this.updateDisplay();
+        if (gameStarted && this.userHistory.length != 0) {
+            this.boardArr = this.userHistory.pop();
+            var score = this.game.boardState.utilityFunction(this.boardArr);
+            this.updateScore(score);
+            console.log('tebak score',score);
+            this.pawnType =  this.pawnType == 1 ? 3 : this.pawnType-2;
+            console.log("tot",this.pawnType);
+            this.updateDisplay();
+        }
     }
 
     // kiri score bot, kanan score user
@@ -448,12 +457,13 @@ class Main {
             if (bothScore[0] < bothScore[1]) {
                 alert('Yeay user win! Congratulations!');
             } else {
-                alert('Whoopsie! You lose this time! Be happy!')
+                alert('Whoopsie! You lose this time! Try again next time!')
             }
         }
     }
 
     placePawn(x: number, y: number) {
+        gameStarted = true;
         this.game.boardState = new Board(this.game.boardState, this.boardArr, this.pawnType, false, 1, [null, null]);
         const turnedPin = this.game.boardState.totalTurnedPin(x,y);
         if (Object.keys(turnedPin).length > 0) {
@@ -491,13 +501,22 @@ class Main {
 }
 
 const main = new Main();
+var gameStarted = false;
 console.log('giliran sokap :', this.main.isBot ? 'Bot' : 'Human');
 
 function handleClick(coor) {
     var [x, y] = coor.split('-');
     x = parseInt(x);
     y = parseInt(y);
-    this.main.placePawn(x, y);
+    if (gameStarted &&
+        !document.getElementById(coor).classList.contains('crown-red') && 
+        !document.getElementById(coor).classList.contains('crown-blue') &&
+        !document.getElementById(coor).classList.contains('helmet-red') &&
+        !document.getElementById(coor).classList.contains('helmet-blue') 
+    ) {
+        this.main.placePawn(x, y);
+    }
+    
 }
 
 function display(x, y) {
@@ -520,6 +539,33 @@ function display(x, y) {
             break;
     }
 }
+
 function undo() {
     main.undoState();
+}
+var userTurn = "";
+var difficulty = "";
+function initGame() {
+
+    var difficulties = document.getElementsByName("bot_difficulty");
+    var userTurnsElement = document.getElementsByName("user_turn");
+    gameStarted = true;
+    document.getElementById("gameStatus").innerHTML = "Game started ! Goodluck !"
+    for (var i = 0, length = userTurnsElement.length; i < length; i++) {    
+        if ((<HTMLInputElement>userTurnsElement[i]).checked){
+            userTurn = (<HTMLInputElement>userTurnsElement[i]).value;
+            break;
+        }
+    }
+
+    for (var i = 0, length = difficulties.length; i < length; i++) {    
+        if ((<HTMLInputElement>difficulties[i]).checked){
+            difficulty = (<HTMLInputElement>difficulties[i]).value;
+            break;
+        }
+    }
+    if (userTurn == "second") {
+        this.main.botTurn();
+    }
+
 }
