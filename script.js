@@ -446,19 +446,22 @@ var Main = /** @class */ (function () {
         }
     };
     Main.prototype.undoState = function () {
+        console.log(gameStarted && this.userHistory.length != 0);
         if (gameStarted && this.userHistory.length != 0) {
             this.boardArr = this.userHistory.pop();
             var score = this.game.boardState.utilityFunction(this.boardArr);
             this.updateScore(score);
-            console.log('tebak score', score);
-            this.pawnType = this.pawnType == 1 ? 3 : this.pawnType - 2;
-            console.log("tot", this.pawnType);
+            if (userTurn != "second") {
+                this.pawnType = this.pawnType == 1 ? 3 : this.pawnType - 2;
+            }
+            else {
+                this.pawnType = this.pawnType == 2 ? 4 : this.pawnType - 2;
+            }
             this.updateDisplay();
         }
     };
     // kiri score bot, kanan score user
     Main.prototype.updateScore = function (bothScore) {
-        console.log("UPDATE SCORE", bothScore);
         document.getElementById("bot_score").innerHTML = bothScore[0].toString();
         document.getElementById("user_score").innerHTML = bothScore[1].toString();
     };
@@ -481,10 +484,10 @@ var Main = /** @class */ (function () {
         }
         if (allEven || allFilled || allOdd) {
             if (bothScore[0] < bothScore[1]) {
-                alert('Yeay user win! Congratulations!');
+                setTimeout(function () { return alert('Yeay user win! Congratulations!'); }, 1000);
             }
             else {
-                alert('Whoopsie! You lose this time! Try again next time!');
+                setTimeout(function () { return alert('Whoopsie! You lose this time! Try again next time!'); }, 1000);
             }
         }
     };
@@ -502,8 +505,8 @@ var Main = /** @class */ (function () {
             this.updateScore(score);
             this.updateDisplay();
             this.checkGameFinished(this.boardArr, score);
+            console.log(this.pawnType);
             this.pawnType = (this.pawnType % 4) + 1;
-            console.log("HUMAN ", this.boardArr);
             this.botTurn();
         }
     };
@@ -522,13 +525,11 @@ var Main = /** @class */ (function () {
             _this.checkGameFinished(_this.boardArr, score);
             _this.pawnType = (_this.pawnType % 4) + 1;
         }, 1000);
-        console.log("BOT ", this.boardArr);
     };
     return Main;
 }());
 var main = new Main();
 var gameStarted = false;
-console.log('giliran sokap :', this.main.isBot ? 'Bot' : 'Human');
 function handleClick(coor) {
     var _a = coor.split('-'), x = _a[0], y = _a[1];
     x = parseInt(x);
@@ -586,4 +587,7 @@ function initGame() {
     if (userTurn == "second") {
         this.main.botTurn();
     }
+}
+function reset() {
+    location.reload();
 }

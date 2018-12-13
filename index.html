@@ -11,8 +11,8 @@
 <body>
     <div class="header">
         <h1>OthelloV2</h1>
-        <h3>TRY TO BEAT THE BOT!</h3>
-        <h4 id="gameStatus">Configure the dashboard and click the play button...</h4>
+        <h2>TRY TO BEAT THE BOT!</h2>
+        <h3 id="gameStatus">Configure the dashboard and click the play button...</h3>
     </div>
     <div class="container">
         <div class="user-domain">
@@ -27,6 +27,7 @@
             <div class="control-container">
                 <button class="control" onclick="initGame()" id="play">Play</button>
                 <button class="control"onclick="undo()" id="undo">Undo</button>
+                <button class="control"onclick="reset()" id="undo">Reset</button>
             </div>
         </div>
         <div class="board-domain">
@@ -220,9 +221,9 @@
             </table>
         </div>
         <div class="result">
-            <h1>Current result :</h1><hr>
-            <h2>User : <span id="user_score">4</span></h2>
-            <h2>Bot : <span id="bot_score">4</span></h2>
+            <h1>Current score :</h1><hr>
+            <h2>First : <span id="user_score">4</span></h2>
+            <h2>Second : <span id="bot_score">4</span></h2>
         </div>
     </div>
     <script src="script.js"></script>

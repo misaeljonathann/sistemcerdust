@@ -419,20 +419,22 @@ class Main {
     }
 
     undoState() {
+        console.log(gameStarted && this.userHistory.length != 0)
         if (gameStarted && this.userHistory.length != 0) {
             this.boardArr = this.userHistory.pop();
             var score = this.game.boardState.utilityFunction(this.boardArr);
             this.updateScore(score);
-            console.log('tebak score',score);
-            this.pawnType =  this.pawnType == 1 ? 3 : this.pawnType-2;
-            console.log("tot",this.pawnType);
+            if (userTurn != "second") {
+                this.pawnType =  this.pawnType == 1 ? 3 : this.pawnType-2;
+            }else {
+                this.pawnType = this.pawnType == 2 ? 4 : this.pawnType -2;
+            }
             this.updateDisplay();
         }
     }
 
     // kiri score bot, kanan score user
     updateScore(bothScore: number[]) {
-        console.log("UPDATE SCORE", bothScore);
         document.getElementById("bot_score").innerHTML = bothScore[0].toString();
         document.getElementById("user_score").innerHTML = bothScore[1].toString();
     }
@@ -455,9 +457,11 @@ class Main {
         }
         if (allEven || allFilled || allOdd) {
             if (bothScore[0] < bothScore[1]) {
-                alert('Yeay user win! Congratulations!');
+                setTimeout(() => alert('Yeay user win! Congratulations!'), 1000);
+                
             } else {
-                alert('Whoopsie! You lose this time! Try again next time!')
+                setTimeout(() => alert('Whoopsie! You lose this time! Try again next time!'), 1000 );
+                
             }
         }
     }
@@ -476,8 +480,8 @@ class Main {
             this.updateScore(score);
             this.updateDisplay();
             this.checkGameFinished(this.boardArr,score);
+            console.log(this.pawnType)
             this.pawnType = (this.pawnType % 4) + 1;
-            console.log("HUMAN ",this.boardArr);
             this.botTurn();
         }
     }
@@ -496,13 +500,11 @@ class Main {
             this.checkGameFinished(this.boardArr,score);
             this.pawnType = (this.pawnType % 4) + 1;
         }, 1000);
-        console.log("BOT ", this.boardArr);
     }
 }
 
 const main = new Main();
 var gameStarted = false;
-console.log('giliran sokap :', this.main.isBot ? 'Bot' : 'Human');
 
 function handleClick(coor) {
     var [x, y] = coor.split('-');
@@ -568,4 +570,8 @@ function initGame() {
         this.main.botTurn();
     }
 
+}
+
+function reset() {
+    location.reload();
 }
